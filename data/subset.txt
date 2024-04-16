@@ -1,0 +1,324 @@
+
+# Modular curves downloaded from the LMFDB on 16 April 2024.
+# Search link: https://beta.lmfdb.org/ModularCurve/Q/?genus=2&genus_minus_rank=1-&cm_discriminants=yes&contains_negative_one=yes
+# Query "{'genus': 2, 'genus_minus_rank': {'$gte': 1}, 'contains_negative_one': True, 'cm_discriminants': {'$ne': []}}" returned 223 curves, sorted by level.
+
+# Each entry in the following data list has the form:
+#    [Label, Name, Level, Index, Genus, Rank, $\Q$-gonality, Cusps, $\Q$-cusps, CM points]
+# For more details, see the definitions at the bottom of the file.
+
+
+
+"10.30.2.a.1"	NULL	10	30	2	0	[2, 2]	3	3	[-4]
+"10.30.2.b.1"	NULL	10	30	2	0	[2, 2]	3	1	[-4]
+"10.30.2.c.1"	NULL	10	30	2	0	[2, 2]	3	1	[-4]
+"10.30.2.d.1"	NULL	10	30	2	0	[2, 2]	3	1	[-4]
+"10.60.2.e.1"	NULL	10	60	2	0	[2, 2]	6	0	[-3, -7]
+"10.60.2.f.1"	NULL	10	60	2	0	[2, 2]	6	0	[-3]
+"11.66.2.a.1"	"Xsp+(11)"	11	66	2	1	[2, 2]	6	1	[-7, -8, -19, -28, -43]
+"12.24.2.c.1"	NULL	12	24	2	0	[2, 2]	2	0	[-3]
+"12.36.2.a.1"	NULL	12	36	2	0	[2, 2]	4	2	[-4]
+"12.36.2.bb.1"	NULL	12	36	2	0	[2, 2]	4	2	[-4]
+"12.36.2.bd.1"	NULL	12	36	2	0	[2, 2]	4	2	[-4]
+"12.36.2.bf.1"	NULL	12	36	2	0	[2, 2]	4	0	[-4]
+"12.36.2.bh.1"	NULL	12	36	2	0	[2, 2]	4	0	[-4]
+"12.36.2.bj.1"	NULL	12	36	2	0	[2, 2]	4	2	[-4]
+"12.36.2.bw.1"	NULL	12	36	2	0	[2, 2]	4	0	[-4]
+"12.36.2.bx.1"	NULL	12	36	2	0	[2, 2]	4	0	[-4]
+"12.36.2.g.1"	NULL	12	36	2	0	[2, 2]	4	2	[-4]
+"12.36.2.n.1"	NULL	12	36	2	0	[2, 2]	4	0	[-4]
+"12.36.2.p.1"	NULL	12	36	2	0	[2, 2]	4	2	[-4]
+"12.36.2.y.1"	NULL	12	36	2	0	[2, 2]	4	0	[-4]
+"12.48.2.c.1"	NULL	12	48	2	0	[2, 2]	6	2	[-3]
+"12.48.2.e.1"	NULL	12	48	2	0	[2, 2]	6	2	[-3]
+"12.72.2.p.1"	NULL	12	72	2	0	[2, 2]	6	0	[-7]
+"14.48.2.f.1"	NULL	14	48	2	0	[2, 2]	6	2	[-7]
+"14.63.2.a.1"	NULL	14	63	2	0	[2, 2]	6	0	[-4, -8, -16]
+"15.30.2.b.1"	NULL	15	30	2	1	[2, 2]	2	2	[-11]
+"15.40.2.a.1"	NULL	15	40	2	0	[2, 2]	4	0	[-3, -12, -27]
+"16.24.2.e.1"	NULL	16	24	2	0	[2, 2]	2	2	[-8]
+"16.24.2.f.1"	NULL	16	24	2	1	[2, 2]	2	2	[-8]
+"16.48.2.ba.1"	NULL	16	48	2	1	[2, 2]	6	2	[-4]
+"16.48.2.bc.1"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.bg.1"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.bh.1"	NULL	16	48	2	0	[2, 2]	6	0	[-4]
+"16.48.2.bk.1"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.bl.1"	NULL	16	48	2	0	[2, 2]	6	0	[-4]
+"16.48.2.bm.1"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.bp.1"	NULL	16	48	2	1	[2, 2]	6	2	[-4]
+"16.48.2.bq.1"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.br.1"	NULL	16	48	2	1	[2, 2]	6	2	[-4]
+"16.48.2.bs.1"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.bu.1"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.bv.1"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.bw.1"	NULL	16	48	2	0	[2, 2]	4	0	[-4]
+"16.48.2.bx.1"	NULL	16	48	2	1	[2, 2]	4	0	[-4]
+"16.48.2.c.1"	NULL	16	48	2	1	[2, 2]	6	2	[-4]
+"16.48.2.g.2"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.l.2"	NULL	16	48	2	1	[2, 2]	6	2	[-4]
+"16.48.2.m.1"	NULL	16	48	2	1	[2, 2]	6	0	[-4]
+"16.48.2.s.1"	NULL	16	48	2	0	[2, 2]	6	0	[-4]
+"16.48.2.w.1"	NULL	16	48	2	0	[2, 2]	6	0	[-4]
+"16.48.2.y.1"	NULL	16	48	2	1	[2, 2]	6	2	[-4]
+"18.24.2.b.1"	NULL	18	24	2	0	[2, 2]	2	2	[-3]
+"18.24.2.c.1"	NULL	18	24	2	0	[2, 2]	2	2	[-3]
+"18.36.2.b.1"	NULL	18	36	2	1	[2, 2]	4	1	[-3]
+"18.36.2.d.1"	NULL	18	36	2	0	[2, 2]	4	4	[-3, -12]
+"18.54.2.b.1"	NULL	18	54	2	1	[2, 2]	3	0	[-3]
+"18.54.2.e.1"	NULL	18	54	2	1	[2, 2]	4	4	[-8]
+"20.30.2.a.1"	NULL	20	30	2	0	[2, 2]	3	1	[-4]
+"20.30.2.b.1"	NULL	20	30	2	0	[2, 2]	3	1	[-4]
+"20.30.2.c.1"	NULL	20	30	2	0	[2, 2]	3	3	[-4, -16]
+"20.30.2.d.1"	NULL	20	30	2	0	[2, 2]	3	1	[-4]
+"20.30.2.e.1"	NULL	20	30	2	1	[2, 2]	3	1	[-4]
+"20.30.2.f.1"	NULL	20	30	2	1	[2, 2]	3	1	[-4]
+"20.30.2.g.1"	NULL	20	30	2	0	[2, 2]	3	1	[-4]
+"20.30.2.h.1"	NULL	20	30	2	0	[2, 2]	3	1	[-4]
+"20.30.2.l.1"	NULL	20	30	2	1	[2, 2]	2	2	[-4]
+"20.60.2.g.1"	NULL	20	60	2	0	[2, 2]	6	0	[-12, -28]
+"20.60.2.h.1"	NULL	20	60	2	1	[2, 2]	6	0	[-3, -7, -8]
+"20.60.2.i.1"	NULL	20	60	2	1	[2, 2]	6	0	[-8, -12, -28]
+"20.90.2.a.1"	NULL	20	90	2	1	[2, 2]	12	0	[-4, -16]
+"21.24.2.a.1"	NULL	21	24	2	0	[2, 2]	2	2	[-7, -28]
+"22.24.2.b.1"	NULL	22	24	2	1	[2, 2]	2	2	[-11]
+"24.24.2.a.1"	NULL	24	24	2	1	[2, 2]	2	0	[-4]
+"24.36.2.a.1"	NULL	24	36	2	1	[2, 2]	4	2	[-4]
+"24.36.2.bl.1"	NULL	24	36	2	1	[2, 2]	4	0	[-8]
+"24.36.2.bo.1"	NULL	24	36	2	1	[2, 2]	4	0	[-4]
+"24.36.2.bu.1"	NULL	24	36	2	1	[2, 2]	4	2	[-16]
+"24.36.2.bv.1"	NULL	24	36	2	1	[2, 2]	4	0	[-4]
+"24.36.2.cs.1"	NULL	24	36	2	0	[2, 2]	4	2	[-16]
+"24.36.2.ct.1"	NULL	24	36	2	1	[2, 2]	4	2	[-4, -16]
+"24.36.2.cw.1"	NULL	24	36	2	0	[2, 2]	4	2	[-16]
+"24.36.2.cx.1"	NULL	24	36	2	1	[2, 2]	4	2	[-4, -16]
+"24.36.2.cz.1"	NULL	24	36	2	1	[2, 2]	4	0	[-8]
+"24.36.2.dl.1"	NULL	24	36	2	1	[2, 2]	4	0	[-4]
+"24.36.2.dt.1"	NULL	24	36	2	1	[2, 2]	4	2	[-16]
+"24.36.2.du.1"	NULL	24	36	2	0	[2, 2]	4	0	[-4]
+"24.36.2.ea.1"	NULL	24	36	2	0	[2, 2]	4	0	[-4]
+"24.36.2.eg.1"	NULL	24	36	2	1	[2, 2]	4	0	[-4]
+"24.36.2.em.1"	NULL	24	36	2	1	[2, 2]	4	0	[-4]
+"24.36.2.es.1"	NULL	24	36	2	0	[2, 2]	4	0	[-4]
+"24.36.2.ev.1"	NULL	24	36	2	1	[2, 2]	4	4	[-8]
+"24.36.2.g.1"	NULL	24	36	2	1	[2, 2]	4	2	[-4]
+"24.36.2.gc.1"	NULL	24	36	2	1	[2, 2]	4	0	[-4]
+"24.36.2.gf.1"	NULL	24	36	2	1	[2, 2]	4	0	[-4]
+"24.36.2.gj.1"	NULL	24	36	2	1	[2, 2]	2	2	[-4]
+"24.36.2.gk.1"	NULL	24	36	2	1	[2, 2]	2	2	[-8]
+"24.36.2.n.1"	NULL	24	36	2	0	[2, 2]	4	0	[-4]
+"24.36.2.x.1"	NULL	24	36	2	1	[2, 2]	4	0	[-4]
+"24.48.2.j.1"	NULL	24	48	2	1	[2, 2]	6	2	[-3]
+"24.48.2.l.1"	NULL	24	48	2	0	[2, 2]	6	2	[-12]
+"24.48.2.o.1"	NULL	24	48	2	1	[2, 2]	6	2	[-12]
+"24.48.2.p.1"	NULL	24	48	2	0	[2, 2]	6	2	[-12]
+"24.48.2.r.1"	NULL	24	48	2	0	[2, 2]	6	2	[-12]
+"24.48.2.s.1"	NULL	24	48	2	0	[2, 2]	6	2	[-3]
+"24.72.2.ba.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.be.1"	NULL	24	72	2	1	[2, 2]	6	2	[-4]
+"24.72.2.bn.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.bs.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.bu.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.bx.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.bz.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.cb.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.cc.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.ch.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.cj.1"	NULL	24	72	2	1	[2, 2]	6	2	[-4]
+"24.72.2.cl.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.cm.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.cn.1"	NULL	24	72	2	0	[2, 2]	6	0	[-28]
+"24.72.2.da.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.db.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.dr.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.dt.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.dv.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.dw.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.ec.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.ed.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.ek.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.el.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.ha.1"	NULL	24	72	2	1	[2, 2]	4	0	[-4]
+"24.72.2.hc.1"	NULL	24	72	2	0	[2, 2]	4	2	[-4]
+"24.72.2.hg.1"	NULL	24	72	2	1	[2, 2]	4	2	[-28]
+"24.72.2.hq.1"	NULL	24	72	2	1	[2, 2]	4	0	[-4]
+"24.72.2.hs.1"	NULL	24	72	2	0	[2, 2]	4	0	[-4]
+"24.72.2.hy.1"	NULL	24	72	2	1	[2, 2]	4	0	[-4]
+"24.72.2.ia.1"	NULL	24	72	2	0	[2, 2]	4	0	[-4]
+"24.72.2.ig.1"	NULL	24	72	2	0	[2, 2]	4	0	[-4]
+"24.72.2.ii.1"	NULL	24	72	2	0	[2, 2]	4	2	[-4]
+"24.72.2.ip.1"	NULL	24	72	2	0	[2, 2]	4	2	[-4]
+"24.72.2.ir.1"	NULL	24	72	2	0	[2, 2]	4	0	[-4]
+"24.72.2.ix.1"	NULL	24	72	2	0	[2, 2]	4	0	[-4]
+"24.72.2.iz.1"	NULL	24	72	2	1	[2, 2]	4	0	[-4]
+"24.72.2.ja.1"	NULL	24	72	2	1	[2, 2]	4	0	[-28]
+"24.72.2.jc.1"	NULL	24	72	2	1	[2, 2]	4	0	[-7]
+"24.72.2.jf.1"	NULL	24	72	2	0	[2, 2]	4	0	[-4]
+"24.72.2.jh.1"	NULL	24	72	2	1	[2, 2]	4	0	[-4]
+"24.72.2.jn.1"	NULL	24	72	2	0	[2, 2]	4	2	[-4]
+"24.72.2.jp.1"	NULL	24	72	2	1	[2, 2]	4	0	[-4]
+"24.72.2.jt.1"	NULL	24	72	2	1	[2, 2]	4	2	[-7]
+"24.72.2.t.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.u.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"24.72.2.x.1"	NULL	24	72	2	1	[2, 2]	6	0	[-4]
+"28.48.2.g.1"	NULL	28	48	2	1	[2, 2]	6	2	[-28]
+"28.48.2.h.1"	NULL	28	48	2	1	[2, 2]	6	2	[-7]
+"28.48.2.i.1"	NULL	28	48	2	0	[2, 2]	6	2	[-28]
+"30.30.2.a.1"	NULL	30	30	2	0	[2, 2]	3	1	[-4]
+"30.30.2.b.1"	NULL	30	30	2	1	[2, 2]	3	1	[-3, -4]
+"30.30.2.c.1"	NULL	30	30	2	0	[2, 2]	3	1	[-4]
+"30.30.2.d.1"	NULL	30	30	2	1	[2, 2]	3	1	[-4]
+"30.30.2.e.1"	NULL	30	30	2	1	[2, 2]	1	1	[-4]
+"30.30.2.f.1"	NULL	30	30	2	1	[2, 2]	1	1	[-4]
+"30.30.2.g.1"	NULL	30	30	2	1	[2, 2]	1	1	[-4]
+"30.40.2.b.1"	NULL	30	40	2	1	[2, 2]	2	2	[-3]
+"30.60.2.a.1"	NULL	30	60	2	0	[2, 2]	8	0	[-3, -12]
+"32.48.2.b.2"	NULL	32	48	2	1	[2, 2]	6	2	[-16]
+"36.54.2.i.1"	NULL	36	54	2	1	[2, 2]	2	2	[-8]
+"38.40.2.b.1"	NULL	38	40	2	1	[2, 2]	2	2	[-19]
+"40.30.2.a.1"	NULL	40	30	2	0	[2, 2]	3	1	[-4]
+"40.30.2.b.1"	NULL	40	30	2	1	[2, 2]	3	1	[-4, -16]
+"40.30.2.c.1"	NULL	40	30	2	1	[2, 2]	3	1	[-4]
+"40.30.2.d.1"	NULL	40	30	2	0	[2, 2]	3	1	[-4]
+"40.30.2.e.1"	NULL	40	30	2	1	[2, 2]	3	1	[-4]
+"40.30.2.f.1"	NULL	40	30	2	1	[2, 2]	3	1	[-4, -16]
+"40.30.2.g.1"	NULL	40	30	2	1	[2, 2]	3	1	[-4]
+"40.30.2.h.1"	NULL	40	30	2	0	[2, 2]	3	1	[-4]
+"40.30.2.i.1"	NULL	40	30	2	0	[2, 2]	3	1	[-4]
+"40.30.2.j.1"	NULL	40	30	2	1	[2, 2]	3	1	[-4]
+"40.30.2.k.1"	NULL	40	30	2	1	[2, 2]	3	1	[-4]
+"40.30.2.l.1"	NULL	40	30	2	1	[2, 2]	3	1	[-4]
+"40.30.2.p.1"	NULL	40	30	2	1	[2, 2]	2	2	[-4, -16]
+"40.60.2.a.1"	NULL	40	60	2	1	[2, 2]	8	0	[-8]
+"48.48.2.ca.2"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.cc.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.ck.2"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.cl.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.cu.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.dc.1"	NULL	48	48	2	0	[2, 2]	6	0	[-4]
+"48.48.2.de.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.dq.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.eb.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.ee.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.el.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.ep.1"	NULL	48	48	2	0	[2, 2]	6	0	[-4]
+"48.48.2.eu.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.ex.1"	NULL	48	48	2	1	[2, 2]	6	0	[-4]
+"48.48.2.ey.1"	NULL	48	48	2	0	[2, 2]	4	0	[-4]
+"48.48.2.ez.1"	NULL	48	48	2	1	[2, 2]	4	0	[-4]
+"54.72.2.b.1"	NULL	54	72	2	0	[2, 2]	2	2	[-3]
+"60.30.2.a.1"	NULL	60	30	2	1	[2, 2]	3	1	[-4]
+"60.30.2.b.1"	NULL	60	30	2	1	[2, 2]	3	1	[-4]
+"60.30.2.c.1"	NULL	60	30	2	0	[2, 2]	3	1	[-4]
+"60.30.2.d.1"	NULL	60	30	2	1	[2, 2]	3	1	[-4]
+"60.30.2.e.1"	NULL	60	30	2	0	[2, 2]	3	1	[-4]
+"60.30.2.f.1"	NULL	60	30	2	0	[2, 2]	3	1	[-4]
+"60.30.2.g.1"	NULL	60	30	2	0	[2, 2]	3	1	[-4]
+"60.30.2.h.1"	NULL	60	30	2	1	[2, 2]	3	1	[-4]
+"60.30.2.r.1"	NULL	60	30	2	1	[2, 2]	1	1	[-4]
+"60.36.2.cn.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.cp.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.cr.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.ct.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.cv.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.cx.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.cz.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.db.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.fk.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.fl.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.fo.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"60.36.2.fp.1"	NULL	60	36	2	0	[2, 2]	4	0	[-4]
+"70.30.2.b.1"	NULL	70	30	2	1	[2, 2]	3	1	[-4]
+"70.30.2.c.1"	NULL	70	30	2	1	[2, 2]	3	1	[-4]
+"70.30.2.d.1"	NULL	70	30	2	1	[2, 2]	3	1	[-4]
+"70.30.2.e.1"	NULL	70	30	2	1	[2, 2]	3	1	[-4]
+"70.60.2.a.1"	NULL	70	60	2	1	[2, 2]	8	0	[-7, -28]
+
+
+# Label --
+#    The **label** of a modular curve $X_H$ is the same as the label of the open subgroup $H\le \GL_2(\widehat\Z)$. When $\det(H)=\widehat\Z^\times$ and $-I\in H$ this label has the form $\texttt{N.i.g.c.n}$, where
+
+#    - $N$ is the level of $H$
+#    - $i$ is the index of $H$
+#    - $g$ is the genus of $H$
+#    - $c$ is a base-26 ordinal that uniquely identifies the Gassmann class of $H$ among groups of the same level, index, and genus.
+#    - $n$ is a positive integer that distinguishes nonconjugate subgroups of the same level, index, genus, and Gassmann class.
+
+#    When $\det(H)=\widehat\Z^\times$ and $-I\not \in H$ this label has the form $\texttt{N.i.g-M.c.m.n}$, where $N$, $i$, and $g$ are as above, and
+
+#    - $N$ is the level of $H$
+#    - $i$ is the index of $H$
+#    - $g$ is the genus of $H$
+#    - $M$ is the level of $H':=\langle H, -I\rangle$
+#    - $c$ is the base-26 ordinal that identifies the Gassmann class of $H'$
+#    - $m$ is the positive integer in the label $\texttt{M.j.g.c.m}$ of $H'$, where $i=2j$.
+#    - $n$ is a positive integer that distinguishes $H$ from nonconjugate refinements of $H'$ of the same level.
+
+
+# Name --
+#    Let $M$ and $N$ denote positive integers and $\ell$ a prime.  Each modular curve below "parametrizes" elliptic curves with a particular type of level structure. Standard modular curves include:
+
+#    $X_0(N)$,
+#    $X_1(N)$,
+#    $X_{\pm 1}(N)$,
+#    $X_1(M,MN)$,
+#    $X_{\pm 1}(M,MN)$,
+#    $X(N)$,
+#    $X_{\mathrm{sp}}(N)$,
+#    $X_{\mathrm{sp}}^+(N)$,
+#    $X_{\mathrm{ns}}(N)$,
+#    $X_{\mathrm{ns}}^+(N)$,
+#    $X_{S_4}(\ell)$,
+#    $X_{\mathrm{arith}}(N)$
+
+#    The curves above are all modular curves specified by an open subgroup $H \le \GL_2(\widehat{\Z})$ of level $N$, $MN$, or $\ell$.
+
+
+
+
+# Level --
+#    The **level** of a modular curve $X_H$ is the level of the open subgroup $H\leq \GL_2(\widehat\Z)$.
+
+
+# Index --
+#    The **index** of a modular curve $X_H$ is the index of the open subgroup $H\leq \GL_2(\widehat\Z)$.  The degree of the canonical morphism $j \colon X_H\to X(1)\simeq \mathbb P^1$ equals the index when $-1 \in H$, and equals half the index if $-1 \notin H$.
+
+
+# Genus --
+#    By the **genus** of a modular curve $X_H$, we mean the genus of any of its geometric components.   This equals the genus of the open subgroup $H\leq \GL_2(\widehat \Z)$.
+
+
+# Rank --
+#    The **analytic rank** of a modular curve is the order of vanishing of its L-function at its central point, which is equal to the sums of the analytic ranks of the L-functions of the simple modular abelian varieties corresponding to Galois orbits of modular forms that are the isogeny factors of its Jacobian.
+
+#    The Birch and Swinnerton-Dyer conjecture for modular abelian varieties implies that the analytic rank is equal to the Mordell-Weil rank of the Jacobian.
+
+
+#$\Q$-gonality (q_gonality_bounds) --
+#    The **$K$-gonality** $\gamma$ of a modular curve $X_H$ is the gonality of any of its geometric components over its canonical field of definition $K$.  (The geometric gonality of that component might be smaller than the $K$-gonality.)
+
+
+# Cusps --
+#    The **cusps** on $X_H$ are the points whose image under the canonical morphism $j\colon X_H\to X(1)\simeq \mathbb P^1$ is $\infty$.  It is only the noncuspidal points that parametrize elliptic curves (with level structure).
+
+#    The **cusps** of a modular curve $X_H$ correspond to the complement of $Y_H$ in $X_H$, where $Y_H$ is the coarse moduli stack $\mathcal M_H^0$ defined in \cite{mr:0337993,doi:10.1007/978-3-540-37855-6_4}.
+
+#    The **rational cusps** (also called **$\Q$-cusps**) are the cusps fixed by $\Gal_\Q$.
+
+
+#$\Q$-cusps (rational_cusps) --
+#    The **cusps** on $X_H$ are the points whose image under the canonical morphism $j\colon X_H\to X(1)\simeq \mathbb P^1$ is $\infty$.  It is only the noncuspidal points that parametrize elliptic curves (with level structure).
+
+#    The **cusps** of a modular curve $X_H$ correspond to the complement of $Y_H$ in $X_H$, where $Y_H$ is the coarse moduli stack $\mathcal M_H^0$ defined in \cite{mr:0337993,doi:10.1007/978-3-540-37855-6_4}.
+
+#    The **rational cusps** (also called **$\Q$-cusps**) are the cusps fixed by $\Gal_\Q$.
+
+
+#CM points (cm_discriminants) --
+#    Rational points on a modular curve $X_H$ that correspond to elliptic curves with complex multiplication are called **CM points**.
+
+#    Over $\Q$ these correspond to rational points in the fiber of the map $j\colon X_H\to X(1)$ above one of the $13$ $j$-invariants of CM elliptic curves over $\Q$ corresponding to one of the **CM discriminants**
+#    \[
+#    -3,-4,-7,-8,-11,-12,-16,-19,-27, -27, -43,-67,-163,
+#    \] of imaginary quadratic orders of class number one.  These $13$ orders lie in $9$ distinct imaginary quadratic fields.
+
+
