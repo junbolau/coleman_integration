@@ -1,5 +1,6 @@
 /*
-   This is a very basic implementation of the algorithm from the paper "Computing actions on cusp forms" for computing the Atkin-Lehner operator on 
+   This is taken from a very basic implementation by David Zywina of the algorithm from his paper 
+   "Computing actions on cusp forms" for computing the Atkin-Lehner operator on 
    spaces of cusp forms with integral weight k>1.   
 
    The main functions are the following (see the function in the code for detailed descriptions):
@@ -7,9 +8,6 @@
                                  by their q-expansion and a matrix W that gives the action of the Atkin-Lehner operator W_N on S_k(Gamma) in terms of this basis.
         "SL2ActionOnCuspForms" : computes a basis of S_k(Gamma(N),Z) and gives the natural right action of SL_2(Z/NZ) on S_k(Gamma(N),Q(zeta_N))
                                  with respect to this basis.
-        "FindCanonicalModel"   : for a subgroup G of GL(2,Z/NZ) with full determinant and containing -I, computes a set of generators of the homogeneous 
-                                 ideal of the image of a canonical map X_G -> P^{g-1},  where X_G is the modular curve of genus g associated to G.
-                                 This works well for small N but has not been optimized.
     
   Remarks on numerical computations:
   The only thing not fully implemented is working out the error terms in the numerical approximations. We simply compute everything to a much higher accuracy
@@ -22,21 +20,6 @@
   The q-expansions are also used to compute the pseudo-eigenvalues of newforms; the series involved converge quickly so not that many terms are actually needed 
   in practice.    In our function for computing pseudo-eigenvalues, there is also a parameter b>0 that one is allowed to vary (we work with a fixed b that has 
   worked for all examples so far).    
-
-  Some examples to try:
-
-        _,B,W,_:=ComputeAtkinLehner(7^2,2,[1+7],100 : real:=true);
-        B; W/7;  
-
-        G:=sub<GL(2,Integers(13))|[ [2,0,0,2], [1,0,0,5], [0,-1,1,0], [1,1,-1,1] ]>;
-        FindCanonicalModel(G,200);
-
-        G:=sub<GL(2,Integers(17))|[ [1,2*3,2,1],[1,0,0,-1]]>;
-        FindCanonicalModel(G,200);
-
-        G:=sub<GL(2,Integers(9))| [[2,0,0,1],[1,0,0,2]]>;
-        FindCanonicalModel(G,200);
-
 */
 
 // We first fix the precision of the real numbers we work with.
@@ -44,22 +27,24 @@ RR:=RealField(50);
 SetDefaultRealField(RR);
 
 
-function AlmostEqual(A,B: prec:=0.0001)
-/* Input: A and B are complex matrices of the same size.
+intrinsic AlmostEqual(A::AlgMatElt, B::AlgMatElt : prec:=0.0001) -> BoolElt
+{
+   Inputs: A and B are complex matrices of the same size.
    Output: returns true if all the entries of A-B have absolute value less than "prec", otherwise returns false.
-*/	
+}	
         b:= exists(d){ A[i,j]-B[i,j]: i in [1..Nrows(A)], j in [1..Ncols(A)] | AbsoluteValue(A[i,j]-B[i,j]) ge prec };
         if b then
 		print "Matrices not \"almost equal\" :", d; 
 	end if;
 	return not b;
-end function;
+end intrinsic;
 
-function PseudoEigenvalue(N,k,f: b:=1.1)
-/* Input: f is the coefficients of a newform of integral weight k>1 and level N; starting at the coefficient of q.
+intrinsic PseudoEigenvalue(N::RngIntElt, k::RngIntElt, f::SeqEnum: b:=1.1) -> FldComElt
+{
+   Input: f is the coefficients of a newform of integral weight k>1 and level N; starting at the coefficient of q.
    Output: the pseudo-eigenvalue of f; a complex number of absolute value 1.
    Note b is a positive real number used in the approximation 
-*/       
+}       
 	RR:=GetDefaultRealField(); b:=RR!b;
 	w1:=Exp(-2*Pi(RR)/(b*Sqrt(RR!N)));
 	w2:=Exp(-2*Pi(RR)*b/(Sqrt(RR!N)));
@@ -77,24 +62,24 @@ function PseudoEigenvalue(N,k,f: b:=1.1)
 
         assert AbsoluteValue(AbsoluteValue(lambda)-1) lt 0.00001;  // check that lambda is reasonable (otherwise one should change b)
         return lambda;
-end function;
+end intrinsic;
 
 
-function ComputeAtkinLehnerNewform(N,k,S0,prec)
-	/* Input:
+intrinsic ComputeAtkinLehnerNewform(N::RngIntElt, k::RngIntElt, S0::Any, prec::RngIntElt) -> RngIntElt, GrpMatElt, GrpMatElt, RngIntElt 
+	{Inputs:
                 N: a positive integer.	
                 k: an integer at least 2.
-                S0: an irreducible cuspidal subspace of weight k modular forms for Gamma_1(N) as produced by Magma's "NewformDecomposition".
+                S0: an irreducible cuspidal subspace of weight k modular forms for Gamma_1(N) as produced by Magmas "NewformDecomposition".
                     This agrees with a space M_f as in the paper.
-		prec: a positive integer to indicate how many terms of q-expansions to use for computations.
+		        prec: a positive integer to indicate how many terms of q-expansions to use for computations.
 
-	   Output:
+	   Outputs:
                 g: dimension of S0.
-		B: a matrix with integer entries whose rows give the first "prec" coefficients of the q-expansion of a basis of 
+		        B: a matrix with integer entries whose rows give the first "prec" coefficients of the q-expansion of a basis of 
                    the Z-module S0(Z), where S0(Z) consists of cusp forms in S0 with integral coefficients.   It will be in Hermitian normal form.
-		W: a matrix describing the action of the Atkin-Lehner involution W_N on S0 with respect to the basis coming from B.
+		        W: a matrix describing the action of the Atkin-Lehner involution W_N on S0 with respect to the basis coming from B.
                 Q: minimal positive integer for which the entries of W lie in the Q-th cyclotomic field.
-	*/
+	}
    
         //  The rows of the matrix B give the first "prec" terms of q-expansions of a basis of S0 in S0(Z).
         B:=Matrix([ [Coefficient(f,n):n in [1..prec]] : f in qIntegralBasis(S0,prec+1)]);
@@ -246,31 +231,42 @@ function ComputeAtkinLehnerNewform(N,k,S0,prec)
         assert W^2 eq N^k*Parent(W)!(-1)^k;  
 
 	return g,B,W,Q;
-end function;
+end intrinsic;
 
-function VerticalJoin0(B)
-   if #B eq 0 then return []; end if;  A:=B[1]; for i in [2..#B] do A:=VerticalJoin(A,B[i]); end for; return A;
-end function;
+intrinsic VerticalJoin0(B::List) -> List
+{}
+   if #B eq 0 then 
+        return []; 
+    end if;  
+    A:=B[1]; 
+    for i in [2..#B] do 
+        A:=VerticalJoin(A,B[i]); 
+    end for; 
+   return A;
+end intrinsic;
 
-function DiagonalJoin0(B)
+intrinsic DiagonalJoin0(B::List) -> List
+{}
    if #B eq 0 then return []; end if; A:=B[1]; for i in [2..#B] do A:=DiagonalJoin(A,B[i]); end for; return A;
-end function;
+end intrinsic;
 
-function ComputeAtkinLehnerNewspace(N,k,gen,prec)
-/* Input: N: a positive integer. 
-          k: a positive integer at least 2.
-          gen: a sequence of integers that are relatively prime to N.
-	  prec: a positive integer to indicate how many terms of a q-expansion to use for computations.
+intrinsic ComputeAtkinLehnerNewspace(N::RngIntElt, k::RngIntElt, gen::SeqEnum, prec::RngIntElt) -> RngIntElt, GrpMatElt, GrpMatElt, RngIntElt
+{ Inputs: 
+    N: a positive integer. 
+    k: a positive integer at least 2.
+    gen: a sequence of integers that are relatively prime to N.
+	prec: a positive integer to indicate how many terms of a q-expansion to use for computations.
  
    Let H be the subgroup of the units of Z/NZ generated by "gen".    Let Gamma_H be the congruence subgroup of level N whose image modulo N
    consists of upper triangular matrices whose diagonal entries lie in H.
    Let S be the newspace of cusp forms in S_k(Gamma_H).
    
-   Output: g: the dimension of S.
-           B: a matrix with integer entries that describes a basis of S.  Each row give the first "prec" coefficients of a q-expansion.
-           W: g by g matrix that describes the action of the Atkin-Lehner operator W_N with respect to the matrix given by B.
-           Q: the smallest positive integer for which the diamond operators <a> acting on S depend only on a mod Q.  
-*/
+   Outputs:
+    g: the dimension of S.
+    B: a matrix with integer entries that describes a basis of S.  Each row give the first "prec" coefficients of a q-expansion.
+    W: g by g matrix that describes the action of the Atkin-Lehner operator W_N with respect to the matrix given by B.
+    Q: the smallest positive integer for which the diamond operators <a> acting on S depend only on a mod Q.  
+}
 	S:=NewSubspace( CuspidalSubspace(ModularSymbolsH(N,gen,k,+1)) );
 	if Dimension(S) eq 0 then return 0,[],[],1; end if;
 
@@ -288,31 +284,32 @@ function ComputeAtkinLehnerNewspace(N,k,gen,prec)
         end if;
 
 	return Nrows(B), B, W, Q;
-end function;
+end intrinsic;
 
 
-function ComputeAtkinLehner(N,k,gen,prec : real:=false, HNF:=true)
-
-/* Input: N: a positive integer.
-          k: a positive integer at least 2.
-          gen: a sequence of integers that are relatively prime to N.
-	  prec: a positive integer to indicate how many terms of a q-expansion to use for computations.
+intrinsic ComputeAtkinLehner(N::RngIntElt, k::RngIntElt, gen::SeqEnum, prec::RngIntElt : real:=false, HNF:=true) -> RngIntElt, GrpMatElt, GrpMatElt, RngIntElt
+{ Inputs: 
+    N: a positive integer.
+    k: a positive integer at least 2.
+    gen: a sequence of integers that are relatively prime to N.
+	prec: a positive integer to indicate how many terms of a q-expansion to use for computations.
  
    Let H be the subgroup of the units of Z/NZ generated by "gen".    Let Gamma_H be the congruence subgroup of level N whose image modulo N
    consists of upper triangular matrices whose diagonal entries lie in H.
    
-   Output: g: the dimension of S_k(Gamma_H).
-           B: a matrix with integer entries that gives a basis of S_k(Gamma_H).  
-              Each row give the first "prec" coefficients of a q-expansion.
-           W: g x g matrix that describes the action of the Atkin-Lehner operator W_N with respect to the matrix given by B.
-           Q: the smallest positive integer for which the diamond operators <a> acting on S_k(Gamma_H) depend only on a mod Q.  
+   Outputs: 
+    g: the dimension of S_k(Gamma_H).
+    B: a matrix with integer entries that gives a basis of S_k(Gamma_H).  
+        Each row give the first "prec" coefficients of a q-expansion.
+    W: g x g matrix that describes the action of the Atkin-Lehner operator W_N with respect to the matrix given by B.
+    Q: the smallest positive integer for which the diamond operators <a> acting on S_k(Gamma_H) depend only on a mod Q.  
 
-           If "real" is false, then the entries of W are returned in the Q-th cyclotomic field Q(zetaQ).
-           If "real" is true and k is even, then the entries of W are returned in Q(xi), where xi:=zetaQ+1/zetaQ.
+    If "real" is false, then the entries of W are returned in the Q-th cyclotomic field Q(zetaQ).
+    If "real" is true and k is even, then the entries of W are returned in Q(xi), where xi:=zetaQ+1/zetaQ.
 
-           If "HNF" is true, then the rows of B give rise to a basis of the Z-module S_k(Gamma_H,Z) and B is in Hermitian normal form.  
-           When HNF is false, we use B coming from Atkin-Lehner-Li theory which often produces a matrix W with many zero entries.
-*/
+    If "HNF" is true, then the rows of B give rise to a basis of the Z-module S_k(Gamma_H,Z) and B is in Hermitian normal form.  
+    When HNF is false, we use B coming from Atkin-Lehner-Li theory which often produces a matrix W with many zero entries.
+}
 
     B:=[* *]; W:=[* *]; Q:=1;
     for M in Divisors(N) do
@@ -382,24 +379,26 @@ function ComputeAtkinLehner(N,k,gen,prec : real:=false, HNF:=true)
     end if;
 
     return Nrows(B),B,W,Q;
-end function;
+end intrinsic;
 
 
-function  SL2ActionOnCuspForms(N,k,prec : HNF:=false)
-/* Input: N: a positive integer at least 2.
-          k: a positive integer at least 2.
-	  prec: a positive integer to indicate how many terms of a q-expansion to use for computations.
+intrinsic  SL2ActionOnCuspForms(N::RngIntElt, k::RngIntElt, prec::RngIntElt : HNF:=false) -> RngIntElt, GrpMatElt, ModGrp, Map
+{
+ INPUTS: 
+    N: a positive integer at least 2.
+    k: a positive integer at least 2.
+	prec: a positive integer to indicate how many terms of a q-expansion to use for computations.
 
-    Output:
-          g: dimension of S_k(Gamma(N),Z).
-          B: a matrix with integer entries that describes a basis of S_k(Gamma(N)); each row give the first "prec" coefficients of a q-expansion.
-          M: with respect to the basis B, M is the right K[SL(2,Z/NZ)]-module S_k(Gamma(N),Q(zeta_N)).
-          phi: the homomorphism SL(2,Z/NZ) -> GL_g( Q(zeta_N) ) corresponding to M with respect to the basis B. 
+OUTPUTS:
+    g: dimension of S_k(Gamma(N),Z).
+    B: a matrix with integer entries that describes a basis of S_k(Gamma(N)); each row give the first "prec" coefficients of a q-expansion.
+    M: with respect to the basis B, M is the right K[SL(2,Z/NZ)]-module S_k(Gamma(N),Q(zeta_N)).
+    phi: the homomorphism SL(2,Z/NZ) -> GL_g( Q(zeta_N) ) corresponding to M with respect to the basis B. 
 
-          If "HNF" is true, then the rows of B give rise to a basis of the Z-module S_k(Gamma_H,Z) and B is in Hermitian normal form.  
-          When HNF is false, we use B coming from Atkin-Lehner-Li theory which is ofter preferable since phi will typically be defined in terms
-          of matrices that are sparser.
-*/
+    If "HNF" is true, then the rows of B give rise to a basis of the Z-module S_k(Gamma_H,Z) and B is in Hermitian normal form.  
+    When HNF is false, we use B coming from Atkin-Lehner-Li theory which is ofter preferable since phi will typically be defined in terms
+    of matrices that are sparser.
+}
 
     g,B,W,Q:=ComputeAtkinLehner(N^2,k,[1+N],prec: HNF:=HNF);
     if g eq 0 then 
@@ -427,19 +426,20 @@ function  SL2ActionOnCuspForms(N,k,prec : HNF:=false)
     phi:=GModuleAction(M); 
 
     return g, B, M, phi;
-end function;
+end intrinsic;
 
 
-function  ComputeModularFormsForXG(G,k,prec)
-/* Input: G: a subgroup of GL(2,Z/NZ) with full determinant and contains -I with N>1.
-          k: a positive integer at least 2.
-	  prec: a positive integer to indicate how many terms of a q-expansion to use for computations.
-    Output:
-          The output is a sequence giving a basis for the Z-submodule of S_k(Gamma(N),Q(zeta_N))^G consisting of cusp forms 
-          with coefficients in Z[zeta_N].
-          Each cusp form is given by a sequence that gives the first "prec" coefficients of a q-expansion.
-*/
-
+intrinsic  ComputeModularFormsForXG(G::GrpMat, k::RngIntElt, prec::RngIntElt) -> SeqEnum
+{
+    INPUTS: 
+        * "G" -- a subgroup of GL(2,Z/NZ) with full determinant and contains -I with N>1.
+        * "k" -- a positive integer at least 2.
+	    * "prec" -- a positive integer to indicate how many terms of a q-expansion to use for computations.
+    OUTPUTS:
+        The output is a sequence giving a basis for the Z-submodule of S_k(Gamma(N),Q(zeta_N))^G consisting of cusp forms 
+        with coefficients in Z[zeta_N].
+        Each cusp form is given by a sequence that gives the first "prec" coefficients of a q-expansion.
+}
     N:=#BaseRing(G);
     K<zetaN>:=CyclotomicField(N);
     OK:=RingOfIntegers(K);
@@ -518,86 +518,7 @@ function  ComputeModularFormsForXG(G,k,prec)
      F:=[ &+[ K![B[i,n*EulerPhi(N)+r+1] : r in [0..EulerPhi(N)-1]] * q^(n+1)  :  n in [0..Ncols(B) div EulerPhi(N) -1] ] + O(q^(prec+1))  : i in [1..Nrows(B)] ];
 
      return F;
-end function;
-
-
-function FindCanonicalModel(G,prec :ReturnBasis:=false)
-/* Input: G: a subgroup of GL(2,Z/NZ) with full determinant and contains -I with N>1.
-	  prec: a positive integer to indicate how many terms of a q-expansion to use for computations.
-    Output:
-        g: the genus g of X_G.
-        psi: a set of generator of the homogeneous ideal of the image of a canonical map X_G -> P^{g-1}_Q.   
-        If "ReturnBasis" is true, then we also return a basis f_1,..,f_g of S_k(Gamma(N),Q(zeta_N))^G such that F(f_1,...,f_g)=0 for all F in psi.      
-*/
-    N:=#BaseRing(G);
-    F:=ComputeModularFormsForXG(G,2,prec);
-    g:=#F;
-    Pol<[x]>:=PolynomialRing(Rationals(),g);
-
-    if g le 2 then 
-        if ReturnBasis then return g, [], F; else return g, []; end if;
-    end if;
-
-    function ComputeId(F,d)
-        // Compute a basis for I_d; the d-th graded component of the ideal I of the canonical curve.
-        mon:=[m: m in MonomialsOfWeightedDegree(Pol,d)];
-        C:=[Evaluate(f,F):f in mon];
-        C:=[ &cat[Eltseq(Coefficient(f,n)): n in [1..prec]]: f in C];
-        C:=ChangeRing(Matrix(C),Integers());
-        L:=Kernel(C); 
-        L:=Matrix(Basis(L)); 
-        L:=LLL(L);
-        psi:=[ &+[L[i,j]*mon[j]: j in [1..#mon]] : i in [1..Nrows(L)] ];
-        return psi;
-    end function;
-       
-    I2:=ComputeId(F,2);
-    if  #I2 eq (g-1)*(g-2) div 2 then 
-        print "XG is hyperelliptic"; 
-        return g, I2; 
-    end if;
-    assert #I2 eq ((g-2)*(g-3)) div 2;
-    print "XG is not hyperelliptic";
-
-    if g eq 3 then
-        I4:=ComputeId(F,4); f:=I4[1];
- 
-        // We have a model of X_G as a plane quartic with integer coefficients given by f=0.
-        // We can use a built in Magma function to choose a nicer f.
-        PZ<[x]>:=PolynomialRing(Integers(),#F);
-        f,A:=MinimizeReducePlaneQuartic(PZ!f); 
-        A:=A^(-1);
-        F:=[ &+[A[i,j]*F[j]: j in [1..3]] : i in [1..3] ];
-
-        if ReturnBasis then return g, [f], F; else return g, [f]; end if;
-    end if;
-
-    mon3:=[m: m in MonomialsOfWeightedDegree(Pol,3)];
-    V:=VectorSpace(Rationals(),#mon3);
-    W:=sub<V| [V![MonomialCoefficient(x[i]*f,m): m in mon3] : i in [1..g], f in I2]>;
-
-    if Dimension(W) eq (g-3)*(g^2+6*g-10) div 6 then
-        if ReturnBasis then return g, I2, F; else return g, I2; end if;
-    end if;
-    assert Dimension(W) eq ((g-3)*(g^2+6*g-10) div 6) - (g-3);
-
-    I3:=ComputeId(F,3);
-    V3:=sub<V| [V![MonomialCoefficient(f,m): m in mon3] : f in I3]>;
-
-    J:=[];
-    i:=1;
-    while Dimension(W) lt Dimension(V3) do
-        v:=V![MonomialCoefficient(I3[i],m): m in mon3];
-        if v notin W then 
-            W:=sub<V|Generators(W) join {v}>; 
-            J:=J cat [I3[i]];
-        end if;
-        i:=i+1;
-    end while;
-    psi:=I2 cat J;
-
-    if ReturnBasis then return g, psi, F; else return g, psi; end if;
-end function;
+end intrinsic;
 
 
 
