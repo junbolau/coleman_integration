@@ -3,7 +3,7 @@
 // https://arxiv.org/pdf/2001.07270 
 
 
-intrinsic CuspFormsBasis(N::RngIntElt, gens::SeqEnum: q_prec := 5000) -> ModTupRngElt
+intrinsic CuspFormsBasis(N::RngIntElt, gens::SeqEnum, q_prec::RngIntElt) -> ModTupRngElt
 {
     INPUTS: 
         * "p" -- a prime number
@@ -14,14 +14,32 @@ intrinsic CuspFormsBasis(N::RngIntElt, gens::SeqEnum: q_prec := 5000) -> ModTupR
         A basis for the space of weight 2 cusp forms of the congruence subgroup specified by gens. 
 }
     K<zetaN> := CyclotomicField(N);
-    g,B,M,phi := SL2ActionOnCuspForms(N, 2, q_prec: HNF := true);
+    //g,B,M,phi := SL2ActionOnCuspForms(N, 2, q_prec: HNF := true);
 
     G := sub<GL(2,Integers(N))|gens>;
     basis := ComputeModularFormsForXG(G, 2, q_prec);
 
     G_basis := Matrix(#basis, q_prec, [Coefficients(i): i in basis]);
-    B := ChangeRing(B, K);
+    //B := ChangeRing(B, K);
 
-    return Solution(B, G_basis)[1];
+    CuspForms := G_basis;
+    //CuspForms := Solution(B, G_basis);
+
+    OutputFileName := "./qexps.txt";
+    
+    for i in [1..Nrows(CuspForms)] do
+        f := CuspForms[i];
+        fprintf OutputFileName, "[";
+        for j in [1..Ncols(CuspForms)] do 
+            if j ne Ncols(CuspForms) then
+                fprintf OutputFileName, "%o,", Eltseq(f[j]);
+            else 
+                fprintf OutputFileName, "%o", Eltseq(f[j]);
+            end if;
+        end for;
+        fprintf OutputFileName, "]\n";
+    end for;
+
+    return CuspForms;
 end intrinsic;
 
