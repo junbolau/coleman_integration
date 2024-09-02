@@ -112,7 +112,7 @@ end function;
 
 // Return: List whose elements are <E, Ebar, tau, H, pp>
 asdf := function(p)
-    found_j_invariants := {};
+    found_j_invariants := {0, 1728 mod p};
     H_s := [];
     pp_s := [* *];
     ret := [* *];
@@ -127,10 +127,11 @@ asdf := function(p)
         tau := Evaluate(phi, InfinitePlaces(K)[1]);
         j_approx := jInvariant(tau);
         d := #PicardGroup(O);
+        print(d);
         min_poly := MinimalPolynomial(j_approx,d);
         H<j> := NumberField(min_poly : DoLinearExtension := true);
         O_H := MaximalOrder(H);
-        
+        print(H);
         // Next, choose a suitable prime pp of H above p compatible with all the previous choices.
         if #H_s eq 0 then 
             pp := Decomposition(O_H, p)[1][1];
@@ -144,25 +145,23 @@ asdf := function(p)
         // Finally, get the 
         _, h := ResidueClassField(pp);
         j_conjugates := [r[1] : r in Roots(PolynomialRing(H)!min_poly)];
+        printf "field is %o\n", H;
+        printf "conjugates are %o\n", j_conjugates; 
         for j_c in j_conjugates do 
             j_cbar := h(O_H!j_c);
-            j_cbar;
+            printf "j = %o\n", j_cbar;
             if j_cbar in found_j_invariants then
                 continue;
             end if;
-            E_c := EllipticCurveFromjInvariant(j_c);
-            E_cint := IntegralModel(E_c);
-            E_period := Periods(E_cint, 1);
+            k := 27*j_c/(j_c-1728);
+            kbar := 27*j_cbar/(j_cbar-1728);
+            E_c := EllipticCurve([-k/4,-k/4]);
+            E_cbar := EllipticCurve([-kbar/4, -kbar/4]);
+            E_period := Periods(E_c, 1);
             tau_c := E_period[2]/E_period[1];
-            try
-                Ebar_c := EllipticCurve([h(O_H!c) : c in Coefficients(E_cint)]);
-            catch e
-                // KodairaSymbol(E_cint, pp);
-                // j_cbar;
-                continue;
-            end try;
+            
             Include(~found_j_invariants, j_cbar);
-            Append(~ret, <j_cbar, E_cint, Ebar_c, H, pp, MinimalPolynomial(tau_c, 2)>);
+            Append(~ret, <j_cbar, E_c, E_cbar, H, pp, MinimalPolynomial(tau_c, 2)>);
         end for;
         ap +:= 1;
     until ap gt Floor(bd) or #found_j_invariants eq p;
@@ -170,3 +169,24 @@ asdf := function(p)
     return ret;
 end function;
 
+find_possible_g_level_structure := function(N, H, Fr, size_A)
+    // g such that HgA = HgA*Fr (where Fr is either the Frobenius or Verschiebung depending on things)
+    // size_A = 2 (tau = i), 3 (tau = zeta_3) or 1 (else)
+    G := GL(2, Integers(N));
+    ret := [**];
+    A_matrices := [[1,0,0,1],[0,-1,1,0],[1,1,-1,0]];
+    A := G!A_matrices[size_A];
+    a_list := [A^(i-1) : i in [1..size_A]];
+    already_seen := [**];
+    T, phi := Transversal(G, H);
+    for g in T do
+        if &or[phi(g*a) in already_seen : a in a_list] then 
+            continue;
+        end if;
+        if &or[g*Fr*a*g^(-1) in H : a in a_list] then 
+            Append(~ret, g);
+        end if;
+        Append(~already_seen, g);
+    end for;
+    return ret;
+end function;
