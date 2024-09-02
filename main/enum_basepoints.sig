@@ -1,0 +1,8 @@
+177,0
+S,FrobMat,"Apply Theorem 2.1 of Duke and Toth, given a,b,D satisfying that 4q=a^2-b^2D, where a is the trace of the Frobenius endomorphism pi, D is the discriminant of Rpi := End(E) cap Q[pi], and b is the index of Z[pi] in Rpi unless Z[pi]=Z in which case D=1 and b=0 See https://arxiv.org/abs/math/0103151 returns a list of integers representing an element of GL_2(Z) with trace a and determinant q representing action of Frob (up to conj)",0,3,0,0,0,0,0,0,0,148,,0,0,148,,0,0,148,,177,-38,-38,-38,-38,-38
+S,j0FM,"returns a list of quadruples <a,b,D,w> where a,b,D define a FrobeniusMatrix (with a >= 0), and w is a rational weight",0,1,0,0,0,0,0,0,0,148,,82,-38,-38,-38,-38,-38
+S,j0FrobeniusMatrices,The set of Frobenius matrices of all elliptic curves with j-invariant 0 over a finite field,0,1,0,0,0,0,0,0,0,148,,83,-38,-38,-38,-38,-38
+S,j1728FM,"returns a list of quadruples <a,b,D,w> where a,b,D define a FrobeniusMatrix (with a >= 0), and w is a rational weight",0,1,0,0,0,0,0,0,0,148,,82,-38,-38,-38,-38,-38
+S,j1728FrobeniusMatrices,The set of Frobenius matrices of all elliptic curves with j-invariant 0 over a finite field,0,1,0,0,0,0,0,0,0,-1,,83,-38,-38,-38,-38,-38
+S,GL2FrobeniusMatrices,The set of Frobenius matrices of all elliptic curves with the specified j-invariant over a finite field,0,1,0,0,0,0,0,0,0,85,,83,-38,-38,-38,-38,-38
+S,EndomorphismRingData,"Given an elliptic curve E/Fq returns integers a, b, D, with 4*q=a^2-b^2*D, where a is the trace of the Frobenius endomorphism pi, D is the discriminant of the ring End(E) cap Q(pi)",1,0,1,334,0,84,1,0,0,0,0,0,0,0,334,,148,148,148,-38,-38,-38
