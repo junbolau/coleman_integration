@@ -90,7 +90,7 @@ end intrinsic;
 
 intrinsic Print(B::BasicBasepoint)
 {Print BasicBasepoint}
-    printf "p = %o, K = %o with Hilbert class field H_O = %o, tau = %o, pp = %o", B`p, Parent(B`tau), Parent(B`v), B`tau, B`pp; 
+    printf "p = %o, K = %o with Hilbert class field H_O = %o, tau = %o, tau_Fr char poly is %o, pp = %o", B`p, BaseField(Parent(B`tau)), Parent(B`tau), B`tau, DefiningPolynomial(BaseField(Parent(B`tau))), B`pp; 
 end intrinsic;
 
 function find_embedding(x_approx, K)
@@ -115,11 +115,11 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
     H_s := [* *];
     pp_s := [* *];
     found_j_invariants := {**};
-    bd := -Floor(2*p^(1/2));
-    for ap in [bd..0] do
+    bd := Floor(2*p^(1/2));
+    for ap in [0..bd] do
         // First, get the j-invariant(s) associated to the order Z[phi], where tr(phi) = ap.
         printf "ap = %o\n", ap; 
-        K<tau_Fr> := NumberField(x^2 + ap*x + p); O_K := MaximalOrder(K); 
+        K<tau_Fr> := NumberField(x^2 - ap*x + p); O_K := MaximalOrder(K); // tau_Fr = (a + sqrt(a^2-4p))/2 = (a + bsqrt(D))/2
 
         DD := ap*ap-4*p; D, bp := SquarefreeFactorization(DD); f0 := (D mod 4 eq 1) select bp else Integers()!(bp/2);
 
@@ -130,7 +130,7 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
             O := sub<O_K | 1, tau>;
             P_O := PolynomialRing(K)!HilbertClassPolynomial(D*(Integers()!(f*bp/f0))^2);
             printf "The Hilbert class polynomial here is %o\n", P_O;
-            H_O := NumberField(P_O : DoLinearExtension := true); j := H_O.1;
+            H_O<j> := NumberField(P_O : DoLinearExtension := true); 
             O_HO := MaximalOrder(H_O);
 
             v := find_embedding(jInvariant(tau_), H_O);
