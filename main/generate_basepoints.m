@@ -1,62 +1,3 @@
-gcd_and_lcm_for_fields := function(K1, K2) 
-    // Return F, K, f1, f2, g1, g2, where f1 and f2 are the embeddings of F into K1 and K2, and g1 and g2 are the embeddings of K1 and K2 into K.
-    e1, e2 := Explode(<0,0>);
-    f1, f2, g1, g2 := Explode(<0,0,0,0>);
-    K := Compositum(K1, K2);
-    print(K);
-    // First, extract the intersection F.
-    for e in SubfieldLattice(K) do
-        x := 0;
-        y := 0;
-        L := NumberField(e);
-        if x eq 0 and IsIsomorphic(K1, L) then 
-            e1 := e;
-            x := 1;
-        end if;
-        if y eq 0 and IsIsomorphic(K2, L) then 
-            e2 := e;
-            y := 1;
-        end if;
-    end for;
-    F := NumberField(e1 meet e2);
-    print(F);
-    // Next, find the embeddings g1 and g2. 
-    for a in Subfields(K) do
-        x := 0;
-        y := 0;
-        L,f := Explode(a);
-        if x eq 0 and IsIsomorphic(K1, L) then 
-            g1 := f;
-            x := 1;
-        end if;
-        if y eq 0 and IsIsomorphic(K2, L) then 
-            g2 := f;
-            y := 1;
-        end if;
-    end for;
-    print(g1);
-    print(g2);
-    // Finally, find the embeddings f1 and f2.
-    x := 0;
-    for aa in [K1, K2] do
-        for a in Subfields(aa) do 
-            L, f := Explode(a);
-            if IsIsomorphic(F, L) then 
-                if x eq 0 then 
-                    f1 := f;
-                    x := 1;
-                else 
-                    f2 := f;
-                end if;
-                break;
-            end if;
-        end for;
-    end for;
-    print(f1);
-    print(f2);
-    return F, K, f1, f2, g1, g2;
-end function;
-
 // Finds the intersection of Galois number fields K and L.
 common_subfield := function(K, L)
     // printf "K = %o\nL = %o\n", K, L;
@@ -79,7 +20,7 @@ common_subfield := function(K, L)
     Error("You should not reach this stage!");
 end function;
 
-// Given a number field K, a prime pp of K above p, and a number field L, return a list of primes ppp of K above p "compatible" with pp. The fields K and L are assumed to be Galois over Q.
+// Given a number field K, a prime pp of K above p, and a number field L, return a list of primes ppp of L above p "compatible" with pp. The fields K and L are assumed to be Galois over Q.
 blah := function(K, L, pp, p)
     // First, find the intersection M of K and L.
     MK, ML, fK, fL, fMKML := common_subfield(K, L);
@@ -110,64 +51,6 @@ blah := function(K, L, pp, p)
     return ret;
 end function;
 
-// Return: List whose elements are <E, Ebar, tau, H, pp>
-asdf := function(p)
-    found_j_invariants := {0, 1728 mod p};
-    H_s := [];
-    pp_s := [* *];
-    ret := [* *];
-    bd := 2*p^(1/2);
-    R<x> := PolynomialRing(Integers());
-    ap := -Floor(bd);
-    repeat
-        // First, get the j-invariant(s) associated to the order Z[phi], where tr(phi) = ap.
-        printf "ap = %o\n", ap;
-        K<phi> := NumberField(x^2 - ap*x + p);
-        O := EquationOrder(K);
-        tau := Evaluate(phi, InfinitePlaces(K)[1]);
-        j_approx := jInvariant(tau);
-        d := #PicardGroup(O);
-        print(d);
-        min_poly := MinimalPolynomial(j_approx,d);
-        H<j> := NumberField(min_poly : DoLinearExtension := true);
-        O_H := MaximalOrder(H);
-        print(H);
-        // Next, choose a suitable prime pp of H above p compatible with all the previous choices.
-        if #H_s eq 0 then 
-            pp := Decomposition(O_H, p)[1][1];
-        else 
-            F := Factorization(&+ [&meet blah(H_s[i], H, pp_s[i], p) : i in [1..#H_s]]);
-            pp := F[1][1];
-        end if;
-        Append(~H_s, H);
-        Append(~pp_s, pp);
-
-        // Finally, get the 
-        _, h := ResidueClassField(pp);
-        j_conjugates := [r[1] : r in Roots(PolynomialRing(H)!min_poly)];
-        printf "field is %o\n", H;
-        printf "conjugates are %o\n", j_conjugates; 
-        for j_c in j_conjugates do 
-            j_cbar := h(O_H!j_c);
-            printf "j = %o\n", j_cbar;
-            if j_cbar in found_j_invariants then
-                continue;
-            end if;
-            k := 27*j_c/(j_c-1728);
-            kbar := 27*j_cbar/(j_cbar-1728);
-            E_c := EllipticCurve([-k/4,-k/4]);
-            E_cbar := EllipticCurve([-kbar/4, -kbar/4]);
-            E_period := Periods(E_c, 1);
-            tau_c := E_period[2]/E_period[1];
-            
-            Include(~found_j_invariants, j_cbar);
-            Append(~ret, <j_cbar, E_c, E_cbar, H, pp, MinimalPolynomial(tau_c, 2)>);
-        end for;
-        ap +:= 1;
-    until ap gt Floor(bd) or #found_j_invariants eq p;
-    found_j_invariants;
-    return ret;
-end function;
 
 find_possible_g_level_structure := function(N, H, Fr, size_A)
     // g such that HgA = HgA*Fr (where Fr is either the Frobenius or Verschiebung depending on things)
@@ -178,7 +61,7 @@ find_possible_g_level_structure := function(N, H, Fr, size_A)
     A := G!A_matrices[size_A];
     a_list := [A^(i-1) : i in [1..size_A]];
     already_seen := [**];
-    T, phi := Transversal(G, H);
+    T, phi := Transversal(G, H); //phi sends g to its coset representative
     for g in T do
         if &or[phi(g*a) in already_seen : a in a_list] then 
             continue;
@@ -190,3 +73,111 @@ find_possible_g_level_structure := function(N, H, Fr, size_A)
     end for;
     return ret;
 end function;
+
+declare type BasicBasepoint;
+declare attributes BasicBasepoint: p, pp, v, tau;
+
+intrinsic MakeBasicBasepoint(p::RngIntElt, tau::FldNumElt, pp::RngOrdIdl, v::PlcNumElt) -> BasicBasepoint
+{Constructor}
+    assert(IsPrime(p));
+    ret := New(BasicBasepoint);
+    ret`p := p;
+    ret`tau := tau;
+    ret`pp := pp;
+    ret`v := v;
+    return ret;
+end intrinsic;
+
+intrinsic Print(B::BasicBasepoint)
+{Print BasicBasepoint}
+    printf "p = %o, K = %o with Hilbert class field H_O = %o, tau = %o, pp = %o", B`p, Parent(B`tau), Parent(B`v), B`tau, B`pp; 
+end intrinsic;
+
+function find_embedding(x_approx, K)
+    for v in InfinitePlaces(K) do 
+        if Abs(x_approx - Evaluate(K.1, v)) lt 1e-20 then
+            return v;
+        end if;
+    end for;
+    error Error("The precision was not strong enough!");
+end function;
+
+function upper_half_conversion(z)
+    return (Im(z) gt 0) select z else -z;
+end function;
+
+intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
+{Generates a list of basepoints whose j-invariants cover all residue classes mod p}
+    assert(IsPrime(p) and p gt 3);
+    R<x> := PolynomialRing(Integers());
+    // H's and pp's are the ring class fields we encounter and the primes we choose above them, created so that we can check compatibility.
+    ret := [* *];
+    H_s := [* *];
+    pp_s := [* *];
+    found_j_invariants := {**};
+    bd := -Floor(2*p^(1/2));
+    for ap in [bd..0] do
+        // First, get the j-invariant(s) associated to the order Z[phi], where tr(phi) = ap.
+        printf "ap = %o\n", ap; 
+        K<tau_Fr> := NumberField(x^2 + ap*x + p); O_K := MaximalOrder(K); 
+
+        DD := ap*ap-4*p; D, bp := SquarefreeFactorization(DD); f0 := (D mod 4 eq 1) select bp else Integers()!(bp/2);
+
+        for f in Reverse(Divisors(f0)) do 
+            printf "K = %o, f = %o\n", K, f; 
+            tau := (tau_Fr + (bp-ap)/2) * f/f0; // (f + f*sqrt(D))/2
+            tau_ := Evaluate(tau, InfinitePlaces(K)[1]);
+            O := sub<O_K | 1, tau>;
+            P_O := PolynomialRing(K)!HilbertClassPolynomial(D*(Integers()!(f*bp/f0))^2);
+            printf "The Hilbert class polynomial here is %o\n", P_O;
+            H_O := NumberField(P_O : DoLinearExtension := true); j := H_O.1;
+            O_HO := MaximalOrder(H_O);
+
+            v := find_embedding(jInvariant(tau_), H_O);
+
+            // Next, choose a suitable prime pp of H above p compatible with all the previous choices.
+            if #H_s eq 0 then 
+                pp := Factorization(p*O_HO)[1][1];
+            else 
+                F := Factorization(&+ [&meet blah(AbsoluteField(H_s[i]), AbsoluteField(H_O), pp_s[i], p) : i in [1..#H_s]]);
+                printf "The possible primes to pick is %o\n", F;
+                pp := F[1][1];
+            end if;
+            Append(~H_s, H_O);
+            Append(~pp_s, pp);
+            
+            // Match up the tau's in the class group action with the j-invariants in the Galois action.
+            j_conjugates_arithmetic := [r[1] : r in Roots(PolynomialRing(H_O)!P_O)];
+            j_conjugates_arithmetic_sorted := [];
+            Cl, m := PicardGroup(O);
+            printf "order of the Picard group is %o\n", #Cl;
+            ba := [Basis(m(g)) : g in Cl | not IsIdentity(g)];
+            tau_conjugates := [H_O!(b[2]/b[1]): b in ba];
+            Append(~tau_conjugates, H_O!tau);
+            j_conjugates_from_tau :=  [jInvariant(upper_half_conversion(Evaluate(ta, v))) : ta in tau_conjugates];
+            for z in j_conjugates_from_tau do 
+                for w in j_conjugates_arithmetic do 
+                    if Abs(z - Evaluate(w, v)) lt 1e-20 then 
+                        Append(~j_conjugates_arithmetic_sorted, w);
+                        break;
+                    end if;
+                end for;
+            end for;
+
+            // Finally, if you encounter a j-invariant residue class you did not see before, then add that in.
+            _, h := ResidueClassField(pp);
+            for i in [1..#j_conjugates_arithmetic_sorted] do 
+                j_c := j_conjugates_arithmetic_sorted[i];
+                j_cbar := h(O_HO!j_c);
+                if j_cbar in found_j_invariants then
+                    continue;
+                end if;
+                Append(~ret, MakeBasicBasepoint(p, tau_conjugates[i], pp, v));
+                Include(~found_j_invariants, j_cbar);
+            end for;
+        end for;
+
+        if #found_j_invariants eq p then return ret; end if;
+    end for;
+    error Error("You did not find all residue classes for some reason.");
+end intrinsic;
