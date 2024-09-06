@@ -170,6 +170,13 @@ asdf := function(p)
 end function;
 
 find_possible_g_level_structure := function(N, H, Fr, size_A)
+    /*
+    INPUTS: 
+    * "N" -- integer, level of H
+    * "H" -- group, subgroup of GL2(N) 
+    * "Fr" -- AlgMatElt, Frobenius matrix
+    * "size_A" -- integer, order of automorphism group 
+    */
     // g such that HgA = HgA*Fr (where Fr is either the Frobenius or Verschiebung depending on things)
     // size_A = 2 (tau = i), 3 (tau = zeta_3) or 1 (else)
     G := GL(2, Integers(N));
