@@ -136,6 +136,16 @@ intrinsic Print(BB:Basepoint)
     printf "BASEPOINT:\n%oLevel structure given by matrix\n%o\n", Parent(BB), BB`g;
 end intrinsic;
 
+intrinsic GetUniformizer(BB:Basepoint) -> RngIntElt
+{Returns a local uniformizer around the residue disk of the basepoint as a power series in q, NOT necessarily at the basepoint itself. The uniformizer is:
+    (1) j(q) - (j mod p) if not in the below cases
+    (2) j(q)^(1/3) if j \equiv 0 and g[1,1,-1,0]g^(-1) does not lie in \Gamma_H.
+    (3) (j(q)-1728)^(1/2) if j \equiv 1728 and g[0,-1,1,0]g^(-1) does not lie in \Gamma_H.
+    (4) (q-r)^(1/h) if cuspidal, where h is the smallest positive integer such that g[1,h,0,1]g^(-1) lies in \Gamma_H.
+}
+    
+end intrinsic;
+
 function find_embedding(x_approx, K)
     for v in InfinitePlaces(K) do 
         if Abs(x_approx - Evaluate(K.1, v)) lt 1e-20 then
