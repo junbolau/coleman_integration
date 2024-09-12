@@ -3,6 +3,7 @@
   model_free_chabauty_coleman.m
   zywina.m
   hecke_action.m 
+  generate_basepoints.m
 
   ModFrmGL2
   {
