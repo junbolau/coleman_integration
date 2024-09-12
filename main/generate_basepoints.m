@@ -89,6 +89,7 @@ intrinsic FrobeniusMatrix(N::RngIntElt, B::BasicBasepoint) -> GrpMat
     end if;
 end intrinsic;
 
+/* NOTE: THIS CODE DOES NOT WORK. It assumes that e.g. [0,-1,1,0] is the automorphism matrix, when the actual matrix could be a conjugate of that! */
 intrinsic FindLevelStructures(N::RngIntElt, H::GrpMat, B::BasicBasepoint) -> SeqEnum
 {Finds the possible level structures on B defined over F_p}
     size_A := (1728 mod B`p eq B`j_modp) select 2 else ((0 mod B`p eq B`j_modp) select 3 else 1);
@@ -143,7 +144,7 @@ intrinsic GetUniformizer(BB:Basepoint) -> RngIntElt
     (3) (j(q)-1728)^(1/2) if j \equiv 1728 and g[0,-1,1,0]g^(-1) does not lie in \Gamma_H.
     (4) (q-r)^(1/h) if cuspidal, where h is the smallest positive integer such that g[1,h,0,1]g^(-1) lies in \Gamma_H.
 }
-    
+
 end intrinsic;
 
 function find_embedding(x_approx, K)
