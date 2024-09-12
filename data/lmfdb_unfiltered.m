@@ -11007,6 +11007,9 @@ end function;
 
 X := [row : row in data | contains_all_scalars(row[2], row[6]) and has_surjective_determinant(row[2], row[6])];
 
+/* Copy and paste THIS line below to print all the data to lmfdb_filtered.m. Of the 10954 groups above, you get 4381 with surjective determinant and that contain all scalar matrices. lmfdb_unfiltered.m only gives you those such that g > 1, g-r > 1, and -I \in H."
+// PrintFile("lmfdb_filtered.m", &cat [Sprintf(&cat ["[*", "\"%o\", ", "%o, ", "%o, ", "%o, ", "%o, ", "[", Sprintf(&cat[Sprintf("%o",row[6][1]), &cat[Sprintf(", %o",x): x in row[6]]]),"]", "*],\n"], row[1], row[2], row[3], row[4], row[5]) : row in X]);
+
 
 
 // Label --
