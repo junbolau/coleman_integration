@@ -11005,10 +11005,22 @@ function process(row)
     return row[2], row[6];
 end function;
 
-X := [row : row in data | contains_all_scalars(row[2], row[6]) and has_surjective_determinant(row[2], row[6])];
+function has_real_type_conjugate(N, gens)
+    G := sub<GL(2, Integers(N)) | gens>;
+    H := PSL2Subgroup(G);
+    try
+        _ := RealTypeConjugate(H);
+    catch E
+        return false;
+    end try;
+    return true;
+end function;
 
-/* Copy and paste THIS line below to print all the data to lmfdb_filtered.m. Of the 10954 groups above, you get 4381 with surjective determinant and that contain all scalar matrices. lmfdb_unfiltered.m only gives you those such that g > 1, g-r > 1, and -I \in H."
-// PrintFile("lmfdb_filtered.m", &cat [Sprintf(&cat ["[*", "\"%o\", ", "%o, ", "%o, ", "%o, ", "%o, ", "[", Sprintf(&cat[Sprintf("%o",row[6][1]), &cat[Sprintf(", %o",x): x in row[6]]]),"]", "*],\n"], row[1], row[2], row[3], row[4], row[5]) : row in X]);
+X := [row : row in data | contains_all_scalars(row[2], row[6]) and has_surjective_determinant(row[2], row[6]) and has_real_type_conjugate(row[2], row[6])];
+
+/* Copy and paste THIS line below to print all the data to lmfdb_filtered.m. Of the 10954 groups above, you get 4285 with surjective determinant, that contain all scalar matrices and have a real type conjugate. */
+// lmfdb_unfiltered.m only gives you those such that g > 1, g-r > 1, -I \in H, and that contain at least one rational point. */
+// SetColumns(0); PrintFile("lmfdb_filtered.m", &cat [Sprintf(&cat ["[*", "\"%o\", ", "%o, ", "%o, ", "%o, ", "%o, ", "[", Sprintf(&cat[Sprintf("%o",row[6][1]), &cat[Sprintf(", %o",row[6][i]): i in [2..#row[6]]]]),"]", "*],\n"], row[1], row[2], row[3], row[4], row[5]) : row in X]);
 
 
 
