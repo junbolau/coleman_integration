@@ -58,6 +58,7 @@ end intrinsic;
 declare type BasicBasepoint[Basepoint];
 declare attributes BasicBasepoint: p, pp, v, tau, j_modp, ap, bp, D, K, H_O;
 declare attributes Basepoint: H, N, g, B;
+declare attributes CuspBasepoint: H, g, r;
 
 
 
@@ -106,7 +107,7 @@ intrinsic FindLevelStructures(N::RngIntElt, H::GrpMat, B::BasicBasepoint) -> Seq
             continue;
         end if;
         if &or[g*Fr*a*g^(-1) in H : a in a_list] then 
-            Append(~ret, MakeBasepoint(N,g,B));
+            Append(~ret, MakeBasepoint(N,H,g,B));
         end if;
         Include(~already_seen, g);
     end for;
@@ -118,11 +119,21 @@ intrinsic Print(B::BasicBasepoint)
     printf "(a,b,D) = (%o,%o,%o),\nHilbert class field is %o,\nPrime above %o is %o,\ntau is %o,\nj-invariant residue class is %o mod %o\n", B`ap, B`bp, B`D, B`H_O, B`p, B`pp, B`tau, B`j_modp, B`p;
 end intrinsic;
 
-intrinsic MakeBasepoint(N::RngIntElt, g::GrpMatElt, B::BasicBasepoint) -> Basepoint
+intrinsic MakeBasepoint(N::RngIntElt, H::GrpMat, g::GrpMatElt, B::BasicBasepoint) -> Basepoint
 {Constructor for Basepoint}
     ret := New(Basepoint);
     ret`B := B;
     ret`N := N;
+    ret`g := g;
+    ret`H := H;
+    return ret;
+end intrinsic;
+
+intrinsic MakeCuspBasepoint(H::GrpMat, g::GrpMatElt, r::FldRatElt) -> CuspBasepoint 
+{Constructor for CuspBasepoint}
+    ret := New(CuspBasepoint);
+    ret`r := r;
+    ret`H := H;
     ret`g := g;
     return ret;
 end intrinsic;
@@ -137,14 +148,42 @@ intrinsic Print(BB:Basepoint)
     printf "BASEPOINT:\n%oLevel structure given by matrix\n%o\n", Parent(BB), BB`g;
 end intrinsic;
 
-intrinsic GetUniformizer(BB:Basepoint) -> RngIntElt
+intrinsic GetUniformizer(BB:Basepoint) -> RngSerLaurElt
 {Returns a local uniformizer around the residue disk of the basepoint as a power series in q, NOT necessarily at the basepoint itself. The uniformizer is:
     (1) j(q) - (j mod p) if not in the below cases
     (2) j(q)^(1/3) if j \equiv 0 and g[1,1,-1,0]g^(-1) does not lie in \Gamma_H.
     (3) (j(q)-1728)^(1/2) if j \equiv 1728 and g[0,-1,1,0]g^(-1) does not lie in \Gamma_H.
     (4) (q-r)^(1/h) if cuspidal, where h is the smallest positive integer such that g[1,h,0,1]g^(-1) lies in \Gamma_H.
 }
+    B := Parent(BB);
+    j := B`j_modp; g := BB`g; H := BB`H;
+    R<q> := LaurentSeriesRing(Rationals(): Global:=false);
+    R2<q2> := LaurentSeriesRing(Rationals(): Global:=false);
+    R3<q3> := LaurentSeriesRing(Rationals(): Global:=false);
+    f2 := hom<R->R2|q2^2>;
+    f3 := hom<R->R3|q3^3>;
+    if (j eq 0) and (not g*GL(2,Integers(N))![1,1,-1,0]*g^(-1) in H) then 
+        return CubeRoot(f3(jInvariant(q)));
+    elif (j eq (1728 mod p)) and (not g*GL(2,Integers(N))![0,1,-1,0]*g^(-1) in H) then
+        return SquareRoot(f(jInvariant(q))-1728);
+    else 
+        return jInvariant(q) - j;
+    end if;
+end intrinsic;
 
+/*TODO: Figure out what happens when r = \infty.*/
+intrinsic GetUniformizer(BB:CuspBasepoint) -> RngSerLaurElt
+{See above}
+    x := g*(GL(2,Integers(N))![1,1,0,1])*g^(-1);
+    y := x;
+    h := 1;
+    while not (y in BB`H) do 
+        h := h+1;
+        y := y*x;
+    end while;
+    C<i> := ComplexField();
+    R<q> := LaurentSeriesRing(C: Global:=false);
+    return (q-Exp(2*Pi(C)*i*BB`r))^(1/h);
 end intrinsic;
 
 function find_embedding(x_approx, K)
