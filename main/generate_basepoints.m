@@ -90,6 +90,19 @@ intrinsic FrobeniusMatrix(N::RngIntElt, B::BasicBasepoint) -> GrpMat
     end if;
 end intrinsic;
 
+intrinsic InverseJFunction(j:FldComElt) -> FldComElt
+{Returns a \tau such that j(\tau) = j. The source is https://math.stackexchange.com/questions/438436/inverting-the-modular-j-function}
+    C<i> := ComplexField();
+    alpha := (1 + SquareRoot(1-1728/j))/2;
+    return i*HypergeometricSeries(1/6,5/6,1,1-alpha)/HypergeometricSeries(1/6,5/6,1,alpha);
+end intrinsic;
+
+intrinsic Q(tau:FldComElt) -> FldComElt 
+{Returns Q(tau) = e^(2 pi i tau).}
+    C<i> := ComplexField();
+    return Exp(2*Pi(C)*i*tau);
+end intrinsic;
+
 /* NOTE: THIS CODE DOES NOT WORK. It assumes that e.g. [0,-1,1,0] is the automorphism matrix, when the actual matrix could be a conjugate of that! */
 intrinsic FindLevelStructures(N::RngIntElt, H::GrpMat, B::BasicBasepoint) -> SeqEnum
 {Finds the possible level structures on B defined over F_p}
@@ -148,7 +161,13 @@ intrinsic Print(BB:Basepoint)
     printf "BASEPOINT:\n%oLevel structure given by matrix\n%o\n", Parent(BB), BB`g;
 end intrinsic;
 
-intrinsic GetUniformizer(BB:Basepoint) -> RngSerLaurElt
+intrinsic TaylorExpansion(f::RngSerLaurElt, q0::FldComElt : prec := 100) -> RngSerLaurElt
+{Computes the Taylor expansion of f(q) at q0.}
+    R<qmq0> := LaurentSeriesRing(ComplexField(): Global := false);
+    return &+ [Evaluate(Derivative(f, i), q0)/Factorial(i) * qmq0^i : i in [0..prec]] + O(qmq0^(prec + 1));
+end intrinsic;
+
+intrinsic GetUniformizer(BB:Basepoint) -> RngSerLaurElt, Map
 {Returns a local uniformizer around the residue disk of the basepoint as a power series in q, NOT necessarily at the basepoint itself. The uniformizer is:
     (1) j(q) - (j mod p) if not in the below cases
     (2) j(q)^(1/3) if j \equiv 0 and g[1,1,-1,0]g^(-1) does not lie in \Gamma_H.
@@ -172,7 +191,7 @@ intrinsic GetUniformizer(BB:Basepoint) -> RngSerLaurElt
 end intrinsic;
 
 /*TODO: Figure out what happens when r = \infty.*/
-intrinsic GetUniformizer(BB:CuspBasepoint) -> RngSerLaurElt
+intrinsic GetUniformizer(BB:CuspBasepoint) -> RngSerLaurElt, Map
 {See above}
     x := g*(GL(2,Integers(N))![1,1,0,1])*g^(-1);
     y := x;

@@ -1,7 +1,3 @@
-tay_derivative_list := function(f, s, prec)
-    return [Evaluate(Derivative(f, i), s)/Factorial(i) : i in [0..prec]];
-end function;
-
 asdf := function(a, b, prec)
 // a := [a1 a2 ... a_prec] taylor series of the uniformizer t at q0
 // b := [b0 b1 ... b_prec] (NOTE it starts from 0) taylor series of f(q) at q0
@@ -27,18 +23,4 @@ asdf := function(a, b, prec)
         c[ell+1] := a[1]^{-ell-1}*(b[ell+1] - sum);
     end for;
     return c;
-end function;
-
-choose_uniformizer := function(j, g, Gamma_H, p)
-// not working yet
-    assert p > 3;
-    if Valuation(j) < 0 then 
-        return 0;
-    elif (j mod p) eq 0 and not (g*(Gamma_H![1,1,-1,0])*g^(-1) in Gamma_H) then 
-        return 0;
-    elif (j mod p) eq (1728 mod p) and not (g*(Gamma_H![0,1,-1,0])*g^(-1) in Gamma_H) then 
-        return 0;
-    else 
-        return jInvariant(q) - j;
-    end if;
 end function;
