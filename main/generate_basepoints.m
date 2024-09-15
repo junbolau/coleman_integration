@@ -1,5 +1,5 @@
 // Finds the intersection of Galois number fields K and L.
-common_subfield := function(K, L)
+function common_subfield(K, L)
     // printf "K = %o\nL = %o\n", K, L;
     for d in Reverse(Divisors(GCD(Degree(K), Degree(L)))) do
         if d eq 1 then 
@@ -80,7 +80,8 @@ end intrinsic;
 intrinsic FrobeniusMatrix(N::RngIntElt, B::BasicBasepoint) -> GrpMat
 {Returns the Frobenius matrix of the base point}
     G := GL(2, Integers(N));
-    r,s := Explode(Flat(B`tau));
+    //r,s := Explode(Flat(B`tau));
+    r,s := Explode(Eltseq(B`tau));
     ap := B`ap; p := B`p;
     if (ap eq 0) or (B`tau in B`pp) then 
         return G![ap + r/s, 1/s, -(r^2+r*s*ap+s^2*p)/s, -r/s];
@@ -89,22 +90,19 @@ intrinsic FrobeniusMatrix(N::RngIntElt, B::BasicBasepoint) -> GrpMat
     end if;
 end intrinsic;
 
-intrinsic InverseJFunction(j:FldComElt) -> FldComElt
-{Returns a \tau such that j(\tau) = j. The source is https://math.stackexchange.com/questions/438436/inverting-the-modular-j-function}
-    C<i> := ComplexField();
-    alpha := (1 + SquareRoot(1-1728/j))/2;
-    return i*HypergeometricSeries(1/6,5/6,1,1-alpha)/HypergeometricSeries(1/6,5/6,1,alpha);
-end intrinsic;
-
 intrinsic Q(tau:FldComElt) -> FldComElt 
 {Returns Q(tau) = e^(2 pi i tau).}
     C<i> := ComplexField();
     return Exp(2*Pi(C)*i*tau);
 end intrinsic;
 
-/* NOTE: This code assumes that [0,-1,1,0], and [1,1,-1,0] are the automorphism matrices when a priori they might be only be conjugate to that matrix. This is fine because in GenerateBasicBasepoints we have hardcoded in the basepoints for j-invariants 0 and 1728. The downside is that you don't get anything about the Frobenius matrix if p is inert in one of those number fields! */
 intrinsic FindLevelStructures(N::RngIntElt, H::GrpMat, B::BasicBasepoint) -> SeqEnum
-{Finds the possible level structures on B defined over F_p}
+{Finds the possible level structures on B defined over F_p
+ NOTE: This code assumes that [0,-1,1,0], and [1,1,-1,0] are the automorphism matrices 
+ when a priori they might be only be conjugate to that matrix. 
+ This is fine because in GenerateBasicBasepoints we have hardcoded in the basepoints for j-invariants 0 and 1728. 
+ The downside is that you do not get anything about the Frobenius matrix if p is inert in one of those number fields.
+}
     size_A := (1728 mod B`p eq B`j_modp) select 2 else ((0 mod B`p eq B`j_modp) select 3 else 1);
     G := GL(2, Integers(N));
     Fr := FrobeniusMatrix(N,B);
@@ -213,50 +211,6 @@ intrinsic Print(BB::CuspBasepoint)
     printf "CUSP BASEPOINT:\nMatrix given by \n%o\nwith tau = %o\n", BB`g, BB`r;
 end intrinsic;
 
-intrinsic TaylorExpansion(f::RngSerLaurElt, q0::FldComElt : prec := 100) -> RngSerLaurElt
-{Computes the Taylor expansion of f(q) at q0.}
-    R<qmq0> := LaurentSeriesRing(ComplexField(): Global := false);
-    return &+ [Evaluate(Derivative(f, i), q0)/Factorial(i) * qmq0^i : i in [0..prec]] + O(qmq0^(prec + 1));
-end intrinsic;
-
-// intrinsic GetUniformizer(BB:Basepoint) -> RngSerLaurElt, Map
-// {Returns a local uniformizer around the residue disk of the basepoint as a power series in q, NOT necessarily at the basepoint itself. The uniformizer is:
-//     (1) j(q) - (j mod p) if not in the below cases
-//     (2) j(q)^(1/3) if j \equiv 0 and g[1,1,-1,0]g^(-1) does not lie in \Gamma_H.
-//     (3) (j(q)-1728)^(1/2) if j \equiv 1728 and g[0,-1,1,0]g^(-1) does not lie in \Gamma_H.
-//     (4) (q-r)^(1/h) if cuspidal, where h is the smallest positive integer such that g[1,h,0,1]g^(-1) lies in \Gamma_H.
-// }
-//     B := Parent(BB);
-//     j := B`j_modp; g := BB`g; H := BB`H;
-//     R<q> := LaurentSeriesRing(Rationals(): Global:=false);
-//     R2<q2> := LaurentSeriesRing(Rationals(): Global:=false);
-//     R3<q3> := LaurentSeriesRing(Rationals(): Global:=false);
-//     f2 := hom<R->R2|q2^2>;
-//     f3 := hom<R->R3|q3^3>;
-//     if (j eq 0) and (not g*GL(2,Integers(N))![1,1,-1,0]*g^(-1) in H) then 
-//         return CubeRoot(f3(jInvariant(q)));
-//     elif (j eq (1728 mod p)) and (not g*GL(2,Integers(N))![0,1,-1,0]*g^(-1) in H) then
-//         return SquareRoot(f(jInvariant(q))-1728);
-//     else 
-//         return jInvariant(q) - j;
-//     end if;
-// end intrinsic;
-
-// /*TODO: Figure out what happens when r = \infty.*/
-// intrinsic GetUniformizer(BB:CuspBasepoint) -> RngSerLaurElt, Map
-// {See above}
-//     x := g*(GL(2,Integers(N))![1,1,0,1])*g^(-1);
-//     y := x;
-//     h := 1;
-//     while not (y in BB`H) do 
-//         h := h+1;
-//         y := y*x;
-//     end while;
-//     C<i> := ComplexField();
-//     R<q> := LaurentSeriesRing(C: Global:=false);
-//     return (q-Exp(2*Pi(C)*i*BB`r))^(1/h);
-// end intrinsic;
-
 function upper_half_conversion(z)
     return (Im(z) gt 0) select z else -z;
 end function;
@@ -318,10 +272,11 @@ function extend_infinite_place(K,L,f,vK,cK)
 end function;
 
 intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
-{Generates a list of basepoints whose j-invariants cover all residue classes mod p}
+{Generates a list of non-cuspidal basepoints whose j-invariants cover all residue classes mod p}
     assert(IsPrime(p) and p gt 3);
     R<x> := PolynomialRing(Integers());
-    // FF keeps track of the compositum of all fields we encountered. ppFF and vvFF are infinite places of FF; we will use these to determine the suitable primes to pick for each field we see.
+    // FF keeps track of the compositum of all fields we encountered. 
+    // ppFF and vvFF are infinite places of FF; we will use these to determine the suitable primes to pick for each field we see.
     ret := [* *];
     FF := Rationals();
     ppFF := p; vvFF := InfinitePlaces(FF)[1];
@@ -350,18 +305,23 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
     bd := Floor(2*p^(1/2));
     for ap in Reverse([0..bd]) do // This reverse is not just for style! It actually helps optimize the code - namely, it gives us a higher chance that the computation of new_FF will be quicker since H_O will then be more likely to contain something we haven't seen before.
         printf "ap = %o\n", ap; 
-        K<tau_Fr> := NumberField(x^2 - ap*x + p); O_K := MaximalOrder(K); // tau_Fr = (a + sqrt(a^2-4p))/2 = (a + bsqrt(D))/2
+        //K<tau_Fr> := NumberField(x^2 - ap*x + p); O_K := MaximalOrder(K); // tau_Fr = (a + sqrt(a^2-4p))/2 = (a + bsqrt(D))/2
         DD := ap*ap-4*p; D, bp := SquarefreeFactorization(DD); f0 := (D mod 4 eq 1) select bp else Integers()!(bp/2);
+        K<alpha> := NumberField(x^2-D);
+        O_K := MaximalOrder(K);
+        P<t> := PolynomialRing(K);
 
         // Now, loop through orders containing the lift of Frobenius.
         conductors := Reverse(Divisors(f0));
         for index in [1..#conductors] do 
             f := conductors[index];
             printf "K = %o, f = %o\n", K, f; 
-            tau := (tau_Fr + (bp-ap)/2) * f/f0; // (f + f*sqrt(D))/2
+            // tau := (tau_Fr + (bp-ap)/2) * f/f0; // (f + f*sqrt(D))/2
+            tau := (D mod 4 eq 1) select f*(1+alpha)/2 else f*alpha; 
             tau_ := Evaluate(tau, InfinitePlaces(K)[1]);
             O := sub<O_K | 1, tau>;
-            P_O := PolynomialRing(K)!HilbertClassPolynomial(D*(Integers()!(f*bp/f0))^2);
+            //P_O := PolynomialRing(K)!HilbertClassPolynomial(D*(Integers()!(f*bp/f0))^2);
+            P_O := P!HilbertClassPolynomial(D*(Integers()!(f*bp/f0))^2);
             printf "The Hilbert class polynomial here is %o\n", P_O;
             H_O<j> := NumberField(P_O : DoLinearExtension := true); 
             O_HO := MaximalOrder(H_O);
@@ -418,7 +378,7 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
 end intrinsic;
 
 intrinsic GenerateAllBasepoints(p::RngIntElt, H::GrpMat, N::RngIntElt) -> SeqEnum
-{Generates all possible basepoints, WITH the level structure.}
+{Generates all possible noncuspidal basepoints, WITH the level structure.}
     x := GenerateBasicBasepoints(p);
     return &cat[FindLevelStructures(N,H,B) : B in x];
 end intrinsic;
