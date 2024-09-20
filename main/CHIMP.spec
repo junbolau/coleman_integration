@@ -4,7 +4,7 @@
   zywina.m
   hecke_action.m 
   generate_basepoints.m
-  power_series.m
+  uniformizers.m
 
   ModFrmGL2
   {

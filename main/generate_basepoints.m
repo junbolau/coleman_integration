@@ -1,78 +1,44 @@
-// Finds the intersection of Galois number fields K and L.
-function common_subfield(K, L)
-    // printf "K = %o\nL = %o\n", K, L;
-    for d in Reverse(Divisors(GCD(Degree(K), Degree(L)))) do
-        if d eq 1 then 
-            id := IdentityFieldMorphism(RationalField());
-            return RationalField(), RationalField(), id, id, id;
-        end if;
-        for KL in CartesianProduct(Subfields(K, d), Subfields(L, d)) do
-            boo, f := IsIsomorphic(KL[1][1], KL[2][1]);
-            if not boo then continue; end if;
-            MK := KL[1][1];
-            ML := KL[2][1];
-            fK := KL[1][2];
-            fL := KL[2][2];
-            // printf "Common subfield: %o\n", MK;
-            return MK, ML, fK, fL, f;
-        end for;
-    end for;
-    Error("You should not reach this stage!");
-end function;
+declare type BasicBasepoint[Basepoint];
+declare attributes BasicBasepoint: p, pp, v, c_v, tau, j_modp, ap, bp, D, K, H_O, j, discrim;
+declare attributes Basepoint: B, H, N, g, gamma, tau_new;
+declare type CuspBasepoint;
+declare attributes CuspBasepoint: H, N, g, gamma, r;
+declare type PlcNumEltWithConj; 
+declare attributes PlcNumEltWithConj: v, c_v;
 
-intrinsic CompatiblePrimes(K::FldNum, L::FldNum, pp::RngOrdIdl, p::RngIntElt) -> SeqEnum
-{
-    Given a number field K, a prime pp of K above p, and a number field L, 
-    return a list of primes ppp of L above p "compatible" with pp. 
-    The fields K and L are assumed to be Galois over Q.
-}
-    // First, find the intersection M of K and L.
-    MK, ML, fK, fL, fMKML := common_subfield(K, L);
-    if Degree(MK) eq 1 then 
-        return [x[1] : x in Decomposition(MaximalOrder(L), p)];
-    end if;
-    // printf "pp = %o\n", pp;
-    // Next, find the prime q of M below pp.
-    found := false;
-    for x in Decomposition(MaximalOrder(MK), p) do
-        q, _ := Explode(x);
-        q1, q2 := TwoElement(q);
-        qK := ideal<MaximalOrder(K) | fK(q1), fK(q2)>;
-        for y in Factorization(qK) do
-            if y[1] eq pp then 
-                found := true;
-                break; 
-            end if;
-        end for;
-        if found then break; end if;
-    end for;
-    assert found;
-    // printf "The prime q of M below pp is %o\n", q;
-    // Finally, find the primes of L above q.
-    qL := ideal<MaximalOrder(L) | fL(fMKML(q1)), fL(fMKML(q2))>;
-    ret := [x[1] : x in Factorization(qL)];
-    // printf "The primes of L above q are %o\n", ret;
+intrinsic NewPlaceWithConj(v::PlcNumElt, c_v::BoolElt) -> PlcNumEltWithConj
+{Constructor}
+    ret := New(PlcNumEltWithConj);
+    ret`v := v;
+    ret`c_v := c_v;
     return ret;
 end intrinsic;
 
-declare type BasicBasepoint[Basepoint];
-declare type CuspBasepoint;
-declare attributes BasicBasepoint: p, pp, v, c_v, tau, j_modp, ap, bp, D, K, H_O;
-declare attributes Basepoint: H, N, g, B;
-declare attributes CuspBasepoint: H, N, g, r;
+intrinsic Evaluate(alph::FldNumElt, vv::PlcNumEltWithConj) -> FldComElt
+{Evaluates alph at the place v.}
+    // require Parent(alph) eq Parent(vv`v) : "Not a valid place of the number field specified";
+    return (vv`c_v select ComplexConjugate(Evaluate(alph,vv`v)) else Evaluate(alph,vv`v));
+end intrinsic;
 
-intrinsic MakeBasicBasepoint(j_modp::FldFinElt, tau::FldNumElt, pp::RngOrdIdl, v::PlcNumElt, c_v::BoolElt, ap::RngIntElt) -> BasicBasepoint
+intrinsic InfinitePlacesWithConj(K::FldNum) -> SeqEnum 
+{Given a number field, returns the infinite places with conjugation}
+    x := InfinitePlaces(K);
+    return &cat [IsReal(v) select [NewPlaceWithConj(v,true)] else [NewPlaceWithConj(v,true),NewPlaceWithConj(v,false)] : v in x];
+end intrinsic;
+
+intrinsic MakeBasicBasepoint(j::FldNumElt, tau::FldNumElt, pp::RngOrdIdl, v::PlcNumEltWithConj, ap::RngIntElt, discrim::RngIntElt) -> BasicBasepoint
 {Constructor}
     ret := New(BasicBasepoint);
     ret`p := Min(pp);
     ret`H_O := Parent(tau);
     ret`K := BaseField(ret`H_O);
-    ret`tau := (Degree(ret`K) eq 2) select (ret`K)!tau else tau;
+    ret`tau := (ret`K)!tau;
     ret`pp := pp;
     ret`v := v;
-    ret`c_v := c_v;
-    ret`j_modp := j_modp;
+    ret`j := j;
+    _, h := ResidueClassField(ret`pp); ret`j_modp := h(MaximalOrder(ret`H_O)!j);
     ret`ap := ap;
+    ret`discrim := discrim;
     DD := ap*ap-4*ret`p; ret`D, ret`bp := SquarefreeFactorization(DD);
     return ret;
 end intrinsic;
@@ -88,12 +54,6 @@ intrinsic FrobeniusMatrix(N::RngIntElt, B::BasicBasepoint) -> GrpMat
     else 
         return G![-r/s, -1/s, (r^2+r*s*ap+s^2*p)/s, ap + r/s];
     end if;
-end intrinsic;
-
-intrinsic Q(tau:FldComElt) -> FldComElt 
-{Returns Q(tau) = e^(2 pi i tau).}
-    C<i> := ComplexField();
-    return Exp(2*Pi(C)*i*tau);
 end intrinsic;
 
 intrinsic FindLevelStructures(N::RngIntElt, H::GrpMat, B::BasicBasepoint) -> SeqEnum
@@ -127,6 +87,7 @@ end intrinsic;
 // Finds a determinant d matrix in H by randomly choosing elements.
 function find_det_d_matrix(d, H, N)
     assert(GCD(d,N) eq 1);
+    if d eq 1 then return H![1,0,0,1]; end if;
     while true do 
         x := Random(H);
         if Determinant(x) eq d then 
@@ -138,6 +99,8 @@ end function;
 // Finds a determinant 1 matrix whose reduction is M.
 function lift_matrix_to_sl2z(M, N)
     a := Integers()!(M[1][1]); b := Integers()!(M[1][2]); c := Integers()!(M[2][1]); d := Integers()!(M[2][2]);
+    if a*d-b*c eq 1 then return SL(2,Integers())![a,b,c,d]; end if;
+    if b eq 0 then b := b+N; end if;
     while not (GCD(a,b) eq 1) do 
         a := a+N;
     end while;
@@ -164,6 +127,7 @@ intrinsic FindCuspLevelStructures(N::RngIntElt, H::GrpMat, p::RngIntElt) -> SeqE
             Append(~ret, MakeCuspBasepoint(N,H,g));
         end if;
         Include(~already_seen, g);
+        
     end for;
     return ret;
 end intrinsic;
@@ -180,6 +144,12 @@ intrinsic MakeBasepoint(N::RngIntElt, H::GrpMat, g::GrpMatElt, B::BasicBasepoint
     ret`N := N;
     ret`g := g;
     ret`H := H;
+    // Now we need to create tau_new...
+    M := lift_matrix_to_sl2z(find_det_d_matrix(Determinant(g)^(-1), H, N)*g, N);
+    a := M[1][1]; b := M[1][2]; c := M[2][1]; d := M[2][2];
+    ret`gamma := M;
+    tau := B`tau;
+    ret`tau_new := (a*tau+b)/(c*tau+d);
     return ret;
 end intrinsic;
 
@@ -192,6 +162,7 @@ intrinsic MakeCuspBasepoint(N::RngIntElt, H::GrpMat, g::GrpMatElt) -> CuspBasepo
     // Now we need to create r...
     M := lift_matrix_to_sl2z(find_det_d_matrix(Determinant(g)^(-1), H, N)*g, N);
     a := M[1][1]; c := M[2][1];
+    ret`gamma := M;
     ret`r := (c eq 0) select Infinity() else a/c;
     return ret;
 end intrinsic;
@@ -211,18 +182,49 @@ intrinsic Print(BB::CuspBasepoint)
     printf "CUSP BASEPOINT:\nMatrix given by \n%o\nwith tau = %o\n", BB`g, BB`r;
 end intrinsic;
 
+intrinsic GetRamification(BB::CuspBasepoint) -> RngIntElt
+{Get ramification of the cusp}
+    return GetWidth(BB`H, BB`N, BB`g);
+end intrinsic;
+
+intrinsic GetWidth(H::GrpMat, N::RngIntElt, g::GrpMatElt) -> RngIntElt 
+{Gets the width of the cusp g*i\infty}
+    gconj := g*GL(2,Integers(N))![1,1,0,1]*g^(-1);
+    a := gconj;
+    ret := 1;
+    while not a in H do 
+        a := a*gconj;
+        ret := ret + 1;
+    end while;
+    return ret;
+end intrinsic;
+
+intrinsic GetWidth(H::GrpMat, N::RngIntElt) -> RngIntElt 
+{Gets the width of the infinite cusp}
+    return GetWidth(H,N,GL(2,Integers(N))![1,0,0,1]);
+end intrinsic;
+
+intrinsic GetRamification(BB::Basepoint) -> RngIntElt
+{Get ramification of the point}
+    B := Parent(BB);
+    N := BB`N;
+    if (B`j eq 0) and not (BB`g * GL(2,Integers(N))![1,1,-1,0] * BB`g^(-1) in BB`H) then return 3; end if;
+    if (B`j eq 1728) and not (BB`g * GL(2,Integers(N))![0,-1,1,0] * BB`g^(-1) in BB`H) then return 2; end if;
+    return 1;
+end intrinsic;
+
 function upper_half_conversion(z)
     return (Im(z) gt 0) select z else -z;
 end function;
 
 // Given an extension L/K, and infinite places v_L and v_K (with c_L and c_K being either the identity or complex conjugation), return an embedding K->L such that v_L extends v_K.
-function embed_based_on_places(L, K, v_L, c_L, v_K, c_K) 
+function embed_based_on_places(L, K, vv_L, vv_K) 
     aK := K.1;
     _, f := IsSubfield(K, L);
     aK_conjugates := [x[1] : x in Roots(PolynomialRing(K)!DefiningPolynomial(K))];
     for c in aK_conjugates do
-        aa := c_L select ComplexConjugate(Evaluate(f(c), v_L)) else Evaluate(f(c), v_L);
-        bb := c_K select ComplexConjugate(Evaluate(aK, v_K)) else Evaluate(aK, v_K);
+        aa := Evaluate(f(c), vv_L);
+        bb := Evaluate(aK, vv_K);
         if Abs(aa - bb) lt 1e-20 then 
             return hom<K -> K | c> * f; 
         end if;  
@@ -246,26 +248,20 @@ end function;
 
 // Given a complex number x_approx that is the embedding of the generator of K, find the specified embedding.
 function find_embedding(x_approx, K)
-    for v in InfinitePlaces(K) do 
-        if Abs(x_approx - Evaluate(K.1, v)) lt 1e-20 then
-            return v, false;
-        end if;
-        if Abs(x_approx - ComplexConjugate(Evaluate(K.1, v))) lt 1e-20 then
-            return v, true;
+    for vv in InfinitePlacesWithConj(K) do 
+        if Abs(x_approx - Evaluate(K.1, vv)) lt 1e-20 then
+            return vv;
         end if;
     end for;
     error Error("The precision was not strong enough!");
 end function;
 
 // Given an embedding of fields f:K->L and an infinite place of K, find an infinite place of L that extends that on K. Using this because Decomposition() is broken...
-function extend_infinite_place(K,L,f,vK,cK)
-    aa := cK select ComplexConjugate(Evaluate(K.1, vK)) else Evaluate(K.1,vK);
-    for vL in InfinitePlaces(L) do 
+function extend_infinite_place(K,L,f,vv_K)
+    aa := Evaluate(K.1,vv_K);
+    for vL in InfinitePlacesWithConj(L) do 
         if Abs(Evaluate(f(K.1), vL) - aa) lt 1e-20 then 
-            return vL, false;
-        end if;
-        if Abs(ComplexConjugate(Evaluate(f(K.1), vL)) - aa) lt 1e-20 then 
-            return vL, true;
+            return vL;
         end if;
     end for;
     error Error("You did not find an infinite place extension for some reason!");
@@ -279,7 +275,7 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
     // ppFF and vvFF are infinite places of FF; we will use these to determine the suitable primes to pick for each field we see.
     ret := [* *];
     FF := Rationals();
-    ppFF := p; vvFF := InfinitePlaces(FF)[1];
+    ppFF := p;
     found_j_invariants := {*0,(1728 mod p)*};
 
     // Before we get into the main loop, we must first deal with j = 0,1728.
@@ -288,26 +284,26 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
     FF := Compositum(Kj1728, Kj0);
     Oj1728 := MaximalOrder(Kj1728); Oj0 := MaximalOrder(Kj0); // maximal orders
     O_FF := MaximalOrder(FF);
-    v1728 := InfinitePlaces(Kj1728)[1]; v0 := InfinitePlaces(Kj0)[1]; // infinite places for each field
-    vvFF := InfinitePlaces(FF)[1];   
-    cc1728 := false; cc0 := false; ccFF := false;
-    f1728 := embed_based_on_places(FF, Kj1728, vvFF, ccFF, v1728, cc1728); f0 := embed_based_on_places(FF, Kj0, vvFF, ccFF, v0, cc0); // embeddings into the compositum that preserve the places
+    v1728 := NewPlaceWithConj(InfinitePlaces(Kj1728)[1], false); v0 := NewPlaceWithConj(InfinitePlaces(Kj0)[1], false); vvFF := NewPlaceWithConj(InfinitePlaces(FF)[1], false); // infinite places for each field
+    f1728 := embed_based_on_places(FF, Kj1728, vvFF, v1728); f0 := embed_based_on_places(FF, Kj0, vvFF, v0); // embeddings into the compositum that preserve the places
     ppFF := Ideal(Decomposition(FF, p)[1][1]); 
     pp1728 := restrict(Oj1728, O_FF, ppFF, f1728); pp0 := restrict(Oj0, O_FF, ppFF, f0); // primes below the chosen prime of the compositum
-    for dat in [*[*v1728, pp1728, Kj1728, 1728, cc1728*], [*v0, pp0, Kj0, 0, cc0*]*] do 
+    for dat in [*[*v1728, pp1728, Kj1728, 1728, -4*], [*v0, pp0, Kj0, 0, -3*]*] do 
         _, gen := IsPrincipal(dat[2]);
         f := MinimalPolynomial(gen);
         a := -Coefficient(f, 1);
-        Append(~ret, MakeBasicBasepoint(GaloisField(p)!dat[4], dat[3].1, dat[2], dat[1], dat[5], a));
+        P<t> := PolynomialRing(dat[3]);
+        H_O := NumberField(P!(t-dat[4]) : DoLinearExtension := true);
+        Append(~ret, MakeBasicBasepoint(H_O!dat[4], H_O!(dat[3].1), dat[2], dat[1], a, dat[5]));
     end for;
 
     // Below this line, we have j \neq 0,1728. First, loop through possible traces of Frobenius.
     bd := Floor(2*p^(1/2));
     for ap in Reverse([0..bd]) do // This reverse is not just for style! It actually helps optimize the code - namely, it gives us a higher chance that the computation of new_FF will be quicker since H_O will then be more likely to contain something we haven't seen before.
         printf "ap = %o\n", ap; 
-        //K<tau_Fr> := NumberField(x^2 - ap*x + p); O_K := MaximalOrder(K); // tau_Fr = (a + sqrt(a^2-4p))/2 = (a + bsqrt(D))/2
+        K<tau_Fr> := NumberField(x^2 - ap*x + p); O_K := MaximalOrder(K); // tau_Fr = (a + sqrt(a^2-4p))/2 = (a + bsqrt(D))/2
         DD := ap*ap-4*p; D, bp := SquarefreeFactorization(DD); f0 := (D mod 4 eq 1) select bp else Integers()!(bp/2);
-        K<alpha> := NumberField(x^2-D);
+        // K<alpha> := NumberField(x^2-D);
         O_K := MaximalOrder(K);
         P<t> := PolynomialRing(K);
 
@@ -316,12 +312,13 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
         for index in [1..#conductors] do 
             f := conductors[index];
             printf "K = %o, f = %o\n", K, f; 
-            // tau := (tau_Fr + (bp-ap)/2) * f/f0; // (f + f*sqrt(D))/2
-            tau := (D mod 4 eq 1) select f*(1+alpha)/2 else f*alpha; 
+            tau := (tau_Fr + (bp-ap)/2) * f/f0; // (f + f*sqrt(D))/2
+            // tau := (D mod 4 eq 1) select f*(1+alpha)/2 else f*alpha; 
             tau_ := Evaluate(tau, InfinitePlaces(K)[1]);
             O := sub<O_K | 1, tau>;
+            discrim := D*(Integers()!(f*bp/f0))^2;
             //P_O := PolynomialRing(K)!HilbertClassPolynomial(D*(Integers()!(f*bp/f0))^2);
-            P_O := P!HilbertClassPolynomial(D*(Integers()!(f*bp/f0))^2);
+            P_O := P!HilbertClassPolynomial(discrim);
             printf "The Hilbert class polynomial here is %o\n", P_O;
             H_O<j> := NumberField(P_O : DoLinearExtension := true); 
             O_HO := MaximalOrder(H_O);
@@ -331,12 +328,12 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
                 new_FF, _ := OptimizedRepresentation(Compositum(FF, ((Degree(P_O) eq 1) select K else OptimizedRepresentation(AbsoluteField(H_O)))));
                 print(new_FF);
                 _, currEmbedFFs := IsSubfield(FF, new_FF); // new compositum and the embedding into that
-                vvFF, ccFF := extend_infinite_place(FF, new_FF, currEmbedFFs, vvFF, ccFF);
+                vvFF := extend_infinite_place(FF, new_FF, currEmbedFFs, vvFF);
                 O_FF := MaximalOrder(new_FF);
                 ppFF := Ideal(Decomposition(currEmbedFFs, Place(ppFF))[1][1]);
             end if;
-            vH, c_vH := find_embedding(jInvariant(tau_), H_O); // find embedding of H_O that sends the generator to the complex j-invariant
-            fHFF := embed_based_on_places(new_FF, H_O, vvFF, ccFF, vH, c_vH); // choose a infinite place of new compositum and embed H_O in there based on that
+            vH := find_embedding(jInvariant(tau_), H_O); // find embedding of H_O that sends the generator to the complex j-invariant
+            fHFF := embed_based_on_places(new_FF, H_O, vvFF, vH); // choose a infinite place of new compositum and embed H_O in there based on that
             ppH := restrict(O_HO, O_FF, ppFF, fHFF); // find the prime of H_O above p and below the prime of the new compositum
             FF := new_FF;
             
@@ -348,10 +345,10 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
             ba := [Basis(m(g)) : g in Cl | not IsIdentity(g)];
             tau_conjugates := [H_O!(b[2]/b[1]): b in ba];
             Append(~tau_conjugates, H_O!tau);
-            j_conjugates_from_tau := c_vH select [jInvariant(upper_half_conversion(ComplexConjugate(Evaluate(ta, vH)))) : ta in tau_conjugates] else [jInvariant(upper_half_conversion(Evaluate(ta, vH))) : ta in tau_conjugates];
+            j_conjugates_from_tau := [jInvariant(upper_half_conversion(Evaluate(ta, vH))) : ta in tau_conjugates];
             for z in j_conjugates_from_tau do 
                 for w in j_conjugates_arithmetic do 
-                    di := c_vH select Abs(z - ComplexConjugate(Evaluate(w, vH))) else Abs(z - Evaluate(w, vH));
+                    di := Abs(z - Evaluate(w, vH));
                     if di lt 1e-20 then 
                         // printf "Found a match. The difference is %o\n", di; 
                         Append(~j_conjugates_arithmetic_sorted, w);
@@ -368,7 +365,7 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
                 if j_cbar in found_j_invariants then
                     continue;
                 end if;
-                Append(~ret, MakeBasicBasepoint(j_cbar, tau_conjugates[i], ppH, vH, c_vH, ap));
+                Append(~ret, MakeBasicBasepoint(j_c, tau_conjugates[i], ppH, vH, ap, discrim));
                 Include(~found_j_invariants, j_cbar);
             end for;
         end for;
