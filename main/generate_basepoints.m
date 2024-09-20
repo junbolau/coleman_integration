@@ -49,7 +49,8 @@ intrinsic FrobeniusMatrix(N::RngIntElt, B::BasicBasepoint) -> GrpMat
     //r,s := Explode(Flat(B`tau));
     r,s := Explode(Eltseq(B`tau));
     ap := B`ap; p := B`p;
-    if (ap eq 0) or (B`tau in B`pp) then 
+    tau_Fr := B`K.1; tau_Fr := B`H_O!tau_Fr;
+    if (ap eq 0) or (tau_Fr in B`pp) then 
         return G![ap + r/s, 1/s, -(r^2+r*s*ap+s^2*p)/s, -r/s];
     else 
         return G![-r/s, -1/s, (r^2+r*s*ap+s^2*p)/s, ap + r/s];
@@ -292,9 +293,12 @@ intrinsic GenerateBasicBasepoints(p::RngIntElt) -> SeqEnum
         _, gen := IsPrincipal(dat[2]);
         f := MinimalPolynomial(gen);
         a := -Coefficient(f, 1);
-        P<t> := PolynomialRing(dat[3]);
+        K<tau_Fr> := NumberField(f);
+        r,s := Explode(Eltseq(gen)); if s lt 0 then s := -s; end if;
+        isom := hom<K->dat[3] | r+s*dat[3].1>; isom := isom^(-1);
+        P<t> := PolynomialRing(K);
         H_O := NumberField(P!(t-dat[4]) : DoLinearExtension := true);
-        Append(~ret, MakeBasicBasepoint(H_O!dat[4], H_O!(dat[3].1), dat[2], dat[1], a, dat[5]));
+        Append(~ret, MakeBasicBasepoint(H_O!dat[4], H_O!(isom(dat[3].1)), ideal<MaximalOrder(K)|K.1>, dat[1], a, dat[5]));
     end for;
 
     // Below this line, we have j \neq 0,1728. First, loop through possible traces of Frobenius.
