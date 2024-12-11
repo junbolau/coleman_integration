@@ -10,4 +10,9 @@
   {
     +ModFrmGL2.spec
   }
+
+  DrewMagma
+  {
+    +magma.spec
+  }
 }
