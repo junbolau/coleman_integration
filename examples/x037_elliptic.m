@@ -3,15 +3,15 @@ AttachSpec("../main/CHIMP.spec");
 function EllipticPoints(Gamma_G, N) 
     PSL := PSL2(Integers());
     coset := Transversal(PSL, Gamma_G);
-    M1 := PSL![1,1,-1,0];
-    M2 := PSL![0, -1, 1, 0];
+    M3 := PSL![0, 1, -1, -1];
+    M2 := PSL![0, 1, -1, 0];
    
 
     elliptic_points := [];
     for g in coset do
-        if not ((g*M1*g^(-1)) in Gamma_G) then 
+        if ((g*M3*g^(-1)) in Gamma_G) then 
             Append(~elliptic_points, <g, 3>);
-        elif not ((g*M2*g^(-1)) in Gamma_G) then
+        elif ((g*M2*g^(-1)) in Gamma_G) then
             Append(~elliptic_points, <g, 2>);
         end if;
     end for;
